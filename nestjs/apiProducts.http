@@ -1,0 +1,71 @@
+GET http://localhost:3000/products/
+###
+GET http://localhost:3000/products/CHUTFMC/children
+###
+GET http://localhost:3000/products/parent
+
+###
+GET http://localhost:3000/products/CHUTFMC
+
+###
+GET http://localhost:3000/products/CHUTFMC/parentandchildren
+
+###
+GET http://localhost:3000/products/save-product
+
+
+###
+POST http://localhost:3000/products
+Content-Type: application/json
+
+{
+  "code": "Test",
+  "description": "asdasd",
+  "price": 20.00,
+  "externalImageURLs": ["https://example.com/image1.jpg", "https://example.com/image2.jpg"],
+  "situation": "new"
+  # "categoryIds": ["0efc53be-afe3-43ca-854d-33ffb2431101", "2899fd09-433e-41d2-8d0e-44ed0d848050"]
+  
+}
+
+
+
+###
+PATCH http://localhost:3000/products/16277290008
+Content-Type: application/json
+
+{
+  "id": "19f16589-6ac7-4429-b78a-a0b9b264bb24",
+  # "code": "sdasd",
+  # "description": "asdasd",
+  # "price": 20.00,
+  # "situation": "new",
+  "externalImageURLs": ["asdasd"]
+
+  # "categoryIds": ["13cd654a-c8d8-4960-b1a7-2d9cb6a9ed1d"]
+}
+
+###
+DELETE http://localhost:3000/products/1
+
+###
+POST http://localhost:3000/products/import
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZgW
+
+------WebKitFormBoundary7MA4YWxkTrZgW
+Content-Disposition: form-data; name="file"; filename="products.csv"
+Content-Type: text/csv
+
+id,code,description,unit,price,situation
+1,sdasd,asdasd,UN,20.00,new
+221,sdasd,asdasd,UN,20.00,new
+------WebKitFormBoundary7MA4YWxkTrZgW--
+
+
+
+curl -X POST http://localhost:3000/products/import \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@products.csv"
+
+
+
