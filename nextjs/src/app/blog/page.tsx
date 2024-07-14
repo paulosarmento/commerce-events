@@ -1,23 +1,19 @@
 "use client";
-
 import { useEffect, useState } from "react";
-import Head from "next/head";
 import { gql } from "@apollo/client";
 import { apolloClient } from "../lib/apolloClient";
-import { woocommerceClient } from "../lib/wooCommerce";
+import Header from "../components/Header";
+import styles from "./Blog.module.css";
 
 interface Post {
   title: string;
   content: string;
   uri: string;
-  date: string;
-}
-interface Product {
-  id: number;
-  name: string;
-  description: string;
-  price: string;
-  permalink: string;
+  featuredImage: {
+    node: {
+      sourceUrl: string;
+    };
+  };
 }
 
 const GET_POSTS = gql`
@@ -25,42 +21,24 @@ const GET_POSTS = gql`
     posts {
       nodes {
         title
-        content
         uri
-        date
+        featuredImage {
+          node {
+            sourceUrl
+          }
+        }
       }
     }
   }
 `;
 
-export const fetchProducts = async () => {
-  try {
-    const response = await woocommerceClient.get("/products");
-    return response.data;
-  } catch (error) {
-    console.error("Erro ao buscar produtos do WooCommerce:", error);
-    return [];
-  }
-};
-
 export default function Blog() {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
 
-  useEffect(() => {
-    const getProducts = async () => {
-      const productsData = await fetchProducts();
-      console.log(productsData);
-      setProducts(productsData);
-    };
-
-    getProducts();
-  }, []);
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const response = await apolloClient.query({ query: GET_POSTS });
-        // console.log(response);
         const postsData = response?.data?.posts?.nodes;
         setPosts(postsData);
       } catch (error) {
@@ -72,47 +50,32 @@ export default function Blog() {
   }, []);
 
   return (
-    <div className="container">
-      <main>
-        <h1 className="title"> WordPress Next.js Starter</h1>
-
-        <div className="grid">
-          {posts.length > 0 ? (
-            posts.map((post) => (
-              <a key={post.uri} href={post.uri} className="card">
-                <h3>{post.title}</h3>
-                <p>{post.content}</p>
-              </a>
-            ))
-          ) : (
-            <p>No posts available</p>
-          )}
+    <>
+      <Header />
+      <main className="relative overflow-y-scroll p-8 pb-20 scrollbar-hide lg:px-16 mt-20">
+        <div className="container">
+          <main>
+            <div className={styles.grid}>
+              {posts.length > 0 ? (
+                posts.map((post) => (
+                  <a key={post.uri} href={post.uri} className={styles.card}>
+                    <div className={styles.cardContent}>
+                      <h3 className={styles.title}>{post.title}</h3>
+                      <img
+                        src={post.featuredImage.node.sourceUrl}
+                        alt={post.title}
+                        className={styles.image}
+                      />
+                    </div>
+                  </a>
+                ))
+              ) : (
+                <p>No posts available</p>
+              )}
+            </div>
+          </main>
         </div>
       </main>
-      <div className="container">
-        <Head>
-          <title>WooCommerce Products</title>
-          <link rel="icon" href="/favicon.ico" />
-        </Head>
-
-        <main>
-          <h1 className="title">WooCommerce Products</h1>
-
-          <div className="grid">
-            {products.length > 0 ? (
-              products.map((product) => (
-                <a key={product.id} href={product.permalink} className="card">
-                  <h3>{product.name}</h3>
-                  <p>{product.description}</p>
-                  <p>Price: ${product.price}</p>
-                </a>
-              ))
-            ) : (
-              <p>No products available</p>
-            )}
-          </div>
-        </main>
-      </div>
-    </div>
+    </>
   );
 }

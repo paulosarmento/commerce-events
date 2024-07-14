@@ -1,0 +1,43 @@
+.container {
+  padding: 20px;
+}
+
+.post {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  color: #666;
+}
+
+.author,
+.date {
+  font-size: 0.9rem;
+}
+
+.image {
+  width: 100%;
+  height: auto;
+  margin: 20px 0;
+}
+
+.content {
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.6;
+}

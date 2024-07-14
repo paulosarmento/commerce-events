@@ -2,7 +2,7 @@ import Header from "../components/Header";
 import { MovieRow } from "../components/MovieRow";
 import { getMoviesByGenre } from "../service/MovieService";
 
-export default async function StorePage() {
+export default async function VideoPage() {
   const genres = ["Drama", "Action", "Comedy", "Animation"];
 
   const movies = await Promise.all(

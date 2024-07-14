@@ -6,11 +6,13 @@ export const NavLinks = () => (
     <Link href="/store">Loja</Link>
     <Link href="/contact">Fale Conosco</Link>
     <Link href="/about">Sobre</Link>
-    <Link href="/search?title=">Filmes</Link>
+
+    {/* <Link href="/search?title=">Filmes</Link> */}
     {/* <Link href="/search?genre=Comedy">Loja</Link> */}
-    <Link href="/blog">Blog</Link>
     <Link href="/products">Produtos</Link>
     <Link href="/events">Eventos</Link>
+    <Link href="/video">Vídeos</Link>
+    <Link href="/blog">Blog</Link>
     <Link href="/auth/login">Minha Conta</Link>
   </ul>
 );
