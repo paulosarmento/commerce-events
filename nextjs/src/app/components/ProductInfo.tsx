@@ -1,13 +1,10 @@
-import { Movie } from "../types/movie";
 import Link from "next/link";
 import {
   ChevronDownIcon,
   PlayIcon,
   PlusIcon,
-  SpeakerWaveIcon,
-  UserGroupIcon,
 } from "@heroicons/react/24/outline";
-import { MovieRating } from "./MovieRating";
+import { Product } from "../types/product";
 
 export const ProductInfo = ({ product }: { product: Product }) => (
   <div className="absolute z-10 w-full rounded-b-md bg-zinc-800 p-2 shadow-md transition lg:p-4 ">
@@ -28,7 +25,7 @@ export const ProductInfo = ({ product }: { product: Product }) => (
     </div>
 
     <div className="mt-4 text-sm font-bold text-white lg:text-lg">
-      {product.title}
+      {product.name}
     </div>
     {/* 
     <div className="mt-4 flex flex-col gap-2 text-sm">
