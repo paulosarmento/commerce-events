@@ -1,4 +1,5 @@
 import React from "react";
+
 export type InputFieldProps = {
   id: string;
   label: string;
@@ -24,7 +25,7 @@ export const InputField: React.FC<InputFieldProps> = ({
         type={type}
         placeholder={placeholder}
         name={id}
-        className="rounded-lg border-gray-600 bg-gray-700 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent "
+        className={`rounded-lg border-gray-600 bg-gray-700 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent ${className}`}
       />
     </div>
   );

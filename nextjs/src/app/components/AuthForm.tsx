@@ -1,13 +1,19 @@
 "use client";
-
 import { InputField } from "./InputField";
 
 interface AuthFormProps {
   formType: "login" | "register";
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  error?: string;
+  pending?: boolean; // Recebendo o estado de carregamento como propriedade
 }
 
-export const AuthForm: React.FC<AuthFormProps> = ({ formType, onSubmit }) => {
+export const AuthForm: React.FC<AuthFormProps> = ({
+  formType,
+  onSubmit,
+  error,
+  pending,
+}) => {
   return (
     <form
       onSubmit={onSubmit}
@@ -39,10 +45,14 @@ export const AuthForm: React.FC<AuthFormProps> = ({ formType, onSubmit }) => {
           />
         )}
         <InputField
-          id="email"
-          label="Email"
-          type="email"
-          placeholder="Enter your email"
+          id={formType === "login" ? "usernameEmail" : "email"}
+          label={formType === "login" ? "Username or Email" : "Email"}
+          type="text"
+          placeholder={
+            formType === "login"
+              ? "Enter your username or email"
+              : "Enter your email"
+          }
         />
         <InputField
           id="password"
@@ -59,12 +69,16 @@ export const AuthForm: React.FC<AuthFormProps> = ({ formType, onSubmit }) => {
           />
         )}
       </div>
+      {error && <p className="text-red-500">{error}</p>}
       <div className="flex flex-col-reverse space-y-2 pt-2 sm:flex-row sm:space-y-0 sm:space-x-2">
         <button
           type="submit"
-          className="flex w-full rounded-lg justify-center bg-red-500 px-4 py-2 text-sm font-semibold text-white sm:w-auto sm-px-8"
+          disabled={pending} // Aqui, `pending` deve desabilitar o botão durante o carregamento
+          className={`flex w-full rounded-lg justify-center px-4 py-2 text-sm font-semibold text-white sm:w-auto sm:px-8 ${
+            pending ? "bg-gray-500" : "bg-red-500"
+          }`}
         >
-          {formType === "login" ? "Login" : "Register"}
+          {pending ? "Loading..." : formType === "login" ? "Login" : "Register"}
         </button>
       </div>
     </form>

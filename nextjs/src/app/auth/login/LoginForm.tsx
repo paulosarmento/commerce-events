@@ -1,42 +1,38 @@
 "use client";
 import { FormEvent, useState } from "react";
 import { AuthForm } from "@/app/components/AuthForm";
-import { useRouter } from "next/navigation";
-
-type ServerError = {
-  message: string;
-};
+import { loginAction } from "./action";
 
 export default function LoginForm() {
-  const router = useRouter();
-  const [errors, setErrors] = useState<string[]>([]);
-  console.log(errors);
+  const [state, setState] = useState({ error: "", pending: false });
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get("email");
-    const password = formData.get("password");
+    setState({ ...state, pending: true });
 
     try {
-      const response = await fetch("/auth/login/api", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-      if (response.ok) {
-        router.push("/");
-        return;
+      const res = await loginAction(state, new FormData(e.currentTarget));
+      if (res?.error) {
+        setState({ ...state, error: res.error, pending: false });
       }
-      const payload: ServerError[] = await response.json();
-      setErrors(payload.map((error) => error.message));
     } catch (error) {
-      console.log(error);
-      setErrors(["Something went wrong"]);
+      console.error("Error submitting form:", error);
+      setState({
+        ...state,
+        error: "An unexpected error occurred",
+        pending: false,
+      });
     }
   };
 
-  return <AuthForm formType="login" onSubmit={handleSubmit} />;
+  return (
+    <>
+      <AuthForm
+        formType="login"
+        onSubmit={handleSubmit}
+        error={state.error}
+        pending={state.pending}
+      />
+    </>
+  );
 }

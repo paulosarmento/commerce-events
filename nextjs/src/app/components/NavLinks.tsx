@@ -13,6 +13,6 @@ export const NavLinks = () => (
     <Link href="/events">Eventos</Link>
     <Link href="/video">Vídeos</Link>
     <Link href="/blog">Blog</Link>
-    <Link href="/auth/login">Minha Conta</Link>
+    <Link href="/my-account">Minha Conta</Link>
   </ul>
 );

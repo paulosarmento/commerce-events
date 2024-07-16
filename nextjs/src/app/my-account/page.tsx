@@ -1,12 +1,13 @@
 import { gql } from "@apollo/client";
 import { getAuthClient, onLogout } from "@faustwp/experimental-app-router";
 import { woocommerceClient } from "../lib/wooCommerce";
+import { redirect } from "next/navigation";
 
 export default async function MyAccountPage() {
   const client = await getAuthClient();
 
   if (!client) {
-    return null;
+    redirect("/auth/login");
   }
 
   const { data } = await client.query({
@@ -30,28 +31,19 @@ export default async function MyAccountPage() {
   const viewerId = data.viewer.databaseId;
   const viewerName = data.viewer.name;
 
-  // await woocommerceClient.patch("/customers/" + viewerId, {
-  //   billing: {
-  //     first_name: "Paulo",
-  //     last_name: "Sarmento",
-  // number: "444",
-  //   },
-  //   shipping: {
-  //     first_name: "John",
-  //     last_name: "Doe",
-  //   },
-  // });
-
+  // Fetch customer information from WooCommerce
   const customersResponse = await woocommerceClient.get(
     "/customers/" + viewerId
   );
 
+  // Fetch orders for the authenticated user
   const ordersResponse = await woocommerceClient.get("/orders", {
     params: {
       customer: viewerId,
     },
   });
 
+  // Fetch products data (optional, if required for the page)
   const productsData = await woocommerceClient.get("/products", {
     params: {
       per_page: 1,
