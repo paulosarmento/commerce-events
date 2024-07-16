@@ -1,25 +1,18 @@
-import Image from "next/image";
-import { Movie } from "../types/movie";
-import { MovieInfo } from "./MovieInfo";
+import React from "react";
+import { Product } from "../types/product";
 
-export const ProductCard = ({ product }: { product: Product }) => (
-  <div className="group relative min-h-[12vh] rounded bg-zinc-900 md:min-h-[12vw]">
-    <Image
-      alt={product.title}
-      src={product.bannerFileURL}
-      width={600}
-      height={400}
-      className="rounded-md object-cover object-top transition"
-    />
-    <div className="invisible absolute top-0 z-10 w-full min-w-[20vw] scale-0 opacity-0 transition delay-300 duration-200 group-hover:-translate-y-[6vw] group-hover:scale-110 group-hover:opacity-100 sm:visible">
-      <Image
-        src={product.bannerFileURL}
-        alt={product.title}
-        width={600}
-        height={400}
-        className="duration h-[12vw] w-full cursor-pointer rounded-t-md object-cover object-top shadow-xl transition"
-      />
-      <MovieInfo movie={product} />
+interface ProductCardProps {
+  product: Product;
+}
+
+export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  return (
+    <div className="border p-4 rounded-lg">
+      <h2 className="text-lg font-bold">{product.name}</h2>
+      <p>{product.price}</p>
+      <a href={product.permalink} target="_blank" rel="noopener noreferrer">
+        View Product
+      </a>
     </div>
-  </div>
-);
+  );
+};
