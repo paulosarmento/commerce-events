@@ -22,7 +22,6 @@ export default async function SearchProductResults({
     return (
       <div>
         <div className="relative bg-gradient-to-b pb-8">
-          <Header />
           <main className="relative overflow-y-scroll p-8 pb-20 scrollbar-hide lg:px-16 mt-20">
             <h1 className="mb-4 text-2xl font-bold">
               Search results for: <span className="text-red-500">{name}</span>
@@ -37,7 +36,6 @@ export default async function SearchProductResults({
   return (
     <div>
       <div className="relative bg-gradient-to-b pb-8">
-        <Header />
         <main className="relative overflow-y-scroll p-8 pb-20 scrollbar-hide lg:px-16 mt-20">
           <h1 className="mb-4 text-2xl font-bold">
             Search results for: <span className="text-red-500">{name}</span>
