@@ -13,7 +13,7 @@ import Image from "next/legacy/image";
 import { Product } from "@/models";
 import Header from "../components/Header";
 
-const products: Product[] = [
+const products = [
   {
     id: "1",
     name: "Produto 1",

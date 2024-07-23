@@ -4,12 +4,30 @@ export type Category = {
 };
 
 export type Product = {
+  manage_stock: any;
   id: string;
   name: string;
   description: string;
   image_url: string;
   price: number;
   category_id: string;
+  type: string;
+  quantity: number;
+  attributes: Attribute[];
+  stock_quantity: number;
+  images: any[];
+  image: string;
+  price_html: string;
+  purchasable: boolean;
+};
+
+export type Attribute = {
+  id: string;
+  name: string;
+  type: string;
+  value: string;
+  option: string;
+  options: string[];
 };
 
 export enum OrderStatus {

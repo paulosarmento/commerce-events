@@ -1,0 +1,178 @@
+{
+  "id": 1218,
+  "name": "Jaqueta Feminina Forrada Corta vento Feminina Mormai",
+  "slug": "jaqueta-feminina-forrada-corta-vento-feminina-mormai",
+  "permalink": "https://solarsports.com.br/products/jaqueta-feminina-forrada-corta-vento-feminina-mormai/",
+  "date_created": "2024-06-03T23:25:18",
+  "date_created_gmt": "2024-06-03T23:25:18",
+  "date_modified": "2024-07-22T18:15:03",
+  "date_modified_gmt": "2024-07-22T18:15:03",
+  "type": "variable",
+  "status": "publish",
+  "featured": false,
+  "catalog_visibility": "visible",
+  "description": "<p>Jaqueta Corta vento feminina, produto forrada de excelente qualidade, com dois bolsos laterais com bolso.</p>\n<p>Composição: 100% Poliamida Produto Original</p>\n",
+  "short_description": "<p>Jaqueta Corta vento feminina, produto forrada de excelente qualidade, com dois bolsos laterais com bolso.</p>\n<p>Composição: 100% Poliamida Produto Original</p>\n",
+  "sku": "JFCORTM",
+  "price": "249.00",
+  "regular_price": "",
+  "sale_price": "",
+  "date_on_sale_from": null,
+  "date_on_sale_from_gmt": null,
+  "date_on_sale_to": null,
+  "date_on_sale_to_gmt": null,
+  "on_sale": false,
+  "purchasable": true,
+  "total_sales": 0,
+  "virtual": false,
+  "downloadable": false,
+  "downloads": [],
+  "download_limit": -1,
+  "download_expiry": -1,
+  "external_url": "",
+  "button_text": "",
+  "tax_status": "taxable",
+  "tax_class": "",
+  "manage_stock": true,
+  "stock_quantity": 1,
+  "backorders": "no",
+  "backorders_allowed": false,
+  "backordered": false,
+  "low_stock_amount": null,
+  "sold_individually": false,
+  "weight": "0.600",
+  "dimensions": {
+    "length": "20",
+    "width": "20",
+    "height": "10"
+  },
+  "shipping_required": true,
+  "shipping_taxable": true,
+  "shipping_class": "",
+  "shipping_class_id": 0,
+  "reviews_allowed": true,
+  "average_rating": "0.00",
+  "rating_count": 0,
+  "upsell_ids": [],
+  "cross_sell_ids": [],
+  "parent_id": 0,
+  "purchase_note": "",
+  "categories": [
+    {
+      "id": 73,
+      "name": "ROUPAS FEMININAS",
+      "slug": "roupas-femininas"
+    }
+  ],
+  "tags": [],
+  "images": [
+    {
+      "id": 1217,
+      "date_created": "2024-06-03T23:25:17",
+      "date_created_gmt": "2024-06-03T23:25:17",
+      "date_modified": "2024-06-03T23:25:24",
+      "date_modified_gmt": "2024-06-03T23:25:24",
+      "src": "https://solarsports.com.br/wp-content/uploads/2024/06/15265717159_Jaqueta20corta20vento20feminin20a20mormai20rosa20520-Photoroom.png-Photoroom5.webp",
+      "name": "15265717159_Jaqueta20corta20vento20feminin20a20mormai20rosa20520-Photoroom.png-Photoroom5.jpg",
+      "alt": ""
+    }
+  ],
+  "attributes": [
+    {
+      "id": 1,
+      "name": "Tamanho",
+      "slug": "pa_tamanho",
+      "position": 0,
+      "visible": true,
+      "variation": true,
+      "options": ["G", "GG", "M", "P"]
+    },
+    {
+      "id": 2,
+      "name": "Cor",
+      "slug": "pa_cor",
+      "position": 0,
+      "visible": true,
+      "variation": true,
+      "options": ["Rosa", "Verde"]
+    }
+  ],
+  "default_attributes": [],
+  "variations": [1220, 1222, 1224, 1226, 1228],
+  "grouped_products": [],
+  "menu_order": 0,
+  "price_html": "<span class=\"woocommerce-Price-amount amount\"><bdi><span class=\"woocommerce-Price-currencySymbol\">&#82;&#36;</span>&nbsp;249,00</bdi></span>",
+  "related_ids": [576, 584],
+  "meta_data": [
+    {
+      "id": 11776,
+      "key": "_eb_reusable_block_ids",
+      "value": []
+    },
+    {
+      "id": 11830,
+      "key": "_wc_gla_sync_status",
+      "value": "synced"
+    },
+    {
+      "id": 11868,
+      "key": "_wc_gla_visibility",
+      "value": "sync-and-show"
+    },
+    {
+      "id": 11870,
+      "key": "_wc_gla_synced_at",
+      "value": "1717457572"
+    },
+    {
+      "id": 11871,
+      "key": "_wc_gla_google_ids",
+      "value": {
+        "BR": "online:pt:BR:gla_1228"
+      }
+    },
+    {
+      "id": 12003,
+      "key": "_eael_post_view_count",
+      "value": "22"
+    },
+    {
+      "id": 12004,
+      "key": "shopengine_product_views_count",
+      "value": "11"
+    },
+    {
+      "id": 14910,
+      "key": "_wc_gla_mc_status",
+      "value": "approved"
+    },
+    {
+      "id": 14931,
+      "key": "_advads_ad_settings",
+      "value": {
+        "disable_ads": 0
+      }
+    }
+  ],
+  "stock_status": "instock",
+  "has_options": true,
+  "post_password": "",
+  "google_listings_and_ads__channel_visibility": {
+    "is_visible": true,
+    "channel_visibility": "sync-and-show",
+    "sync_status": "synced",
+    "issues": []
+  },
+  "_links": {
+    "self": [
+      {
+        "href": "https://solarsports.com.br/wp-json/wc/v3/products/1218"
+      }
+    ],
+    "collection": [
+      {
+        "href": "https://solarsports.com.br/wp-json/wc/v3/products"
+      }
+    ]
+  }
+}

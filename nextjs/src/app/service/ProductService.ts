@@ -60,3 +60,21 @@ export const getProducts = async (): Promise<any> => {
     throw new Error(`Error fetching products: ${error}`);
   }
 };
+
+export const getProduct = async (id: number): Promise<any> => {
+  try {
+    const response = await woocommerceClient.get(`/products/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(`Error fetching product: ${error}`);
+  }
+};
+
+export const getProductVariation = async (id: number): Promise<any> => {
+  try {
+    const response = await woocommerceClient.get(`/products/${id}/variations`);
+    return response.data;
+  } catch (error) {
+    throw new Error(`Error fetching product: ${error}`);
+  }
+};

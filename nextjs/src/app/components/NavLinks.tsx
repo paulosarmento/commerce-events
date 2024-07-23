@@ -9,8 +9,7 @@ export const NavLinks = () => (
 
     {/* <Link href="/search?title=">Filmes</Link> */}
     {/* <Link href="/search?genre=Comedy">Loja</Link> */}
-    <Link href="/products">Produtos</Link>
-    <Link href="/events">Eventos</Link>
+    <Link href="/products">Ofertas</Link>
     <Link href="/video">Vídeos</Link>
     <Link href="/blog">Blog</Link>
     <Link href="/my-account">Minha Conta</Link>
