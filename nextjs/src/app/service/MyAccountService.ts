@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { getAuthClient, onLogout } from "@faustwp/experimental-app-router";
+import { getAuthClient } from "@faustwp/experimental-app-router";
 import { woocommerceClient } from "../lib/wooCommerce";
 
 export const fetchMyAccountData = async () => {
@@ -40,8 +40,4 @@ export const fetchMyAccountData = async () => {
     posts: data.viewer.posts.nodes,
     orders: ordersResponse.data,
   };
-};
-
-export const logoutAction = async () => {
-  await onLogout();
 };
