@@ -11,7 +11,6 @@ import {
   MenuItem,
   Tooltip,
   CircularProgress,
-  SelectChangeEvent,
 } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import Image from "next/legacy/image";
@@ -24,7 +23,7 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { useTheme } from "@mui/material/styles";
 
 export default function ProductDetailPage({
-  params,
+  params: { id },
 }: {
   params: { id: string };
 }) {
@@ -35,62 +34,63 @@ export default function ProductDetailPage({
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [stockQuantity, setStockQuantity] = useState<number | null>(null);
   const [stockStatus, setStockStatus] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
   const theme = useTheme();
 
   const fetchProductData = useCallback(async () => {
     try {
-      const productData = await getProduct(parseInt(params.id));
+      setLoading(true);
+      const productData = await getProduct(Number(id));
       setProduct(productData);
 
       if (productData.type === "variable") {
-        const variationsData = await getProductVariation(parseInt(params.id));
+        const variationsData = await getProductVariation(Number(id));
         setVariations(variationsData);
       }
 
-      if (productData.attributes.length > 0) {
-        const defaultColor =
-          productData.attributes.find((attr: any) => attr.name === "Cor")
-            ?.options[0] || "";
-        const defaultSize =
-          productData.attributes.find((attr: any) => attr.name === "Tamanho")
-            ?.options[0] || "";
-        setSelectedColor(defaultColor);
-        setSelectedSize(defaultSize);
-      }
+      const defaultColor =
+        productData.attributes.find((attr: any) => attr.name === "Cor")
+          ?.options[0] || "";
+      const defaultSize =
+        productData.attributes.find((attr: any) => attr.name === "Tamanho")
+          ?.options[0] || "";
+      setSelectedColor(defaultColor);
+      setSelectedSize(defaultSize);
     } catch (error) {
       console.error("Error fetching product:", error);
+    } finally {
+      setLoading(false);
     }
-  }, [params.id]);
+  }, [id]);
 
   useEffect(() => {
     fetchProductData();
   }, [fetchProductData]);
 
   const updateStock = useCallback(() => {
-    if (product) {
-      let stock = 0;
-      let status = "Sem estoque";
+    if (!product) return;
+    let stock = 0;
+    let status = "Sem estoque";
 
-      if (product.type === "variable") {
-        const selectedVariation = variations.find((variation) =>
-          variation.attributes.every(
-            (attr) =>
-              (attr.name === "Cor" && attr.option === selectedColor) ||
-              (attr.name === "Tamanho" && attr.option === selectedSize)
-          )
-        );
-        if (selectedVariation) {
-          stock = selectedVariation.stock_quantity;
-          status = stock > 0 ? "Em estoque" : status;
-        }
-      } else if (product.manage_stock) {
-        stock = product.stock_quantity;
+    if (product.type === "variable") {
+      const selectedVariation = variations.find((variation) =>
+        variation.attributes.every(
+          (attr) =>
+            (attr.name === "Cor" && attr.option === selectedColor) ||
+            (attr.name === "Tamanho" && attr.option === selectedSize)
+        )
+      );
+      if (selectedVariation) {
+        stock = selectedVariation.stock_quantity;
         status = stock > 0 ? "Em estoque" : status;
       }
-
-      setStockQuantity(stock);
-      setStockStatus(status);
+    } else if (product.manage_stock) {
+      stock = product.stock_quantity;
+      status = stock > 0 ? "Em estoque" : status;
     }
+
+    setStockQuantity(stock);
+    setStockStatus(status);
   }, [product, variations, selectedColor, selectedSize]);
 
   useEffect(() => {
@@ -106,10 +106,10 @@ export default function ProductDetailPage({
             (attr.name === "Tamanho" && attr.option === selectedSize)
         )
       );
-      const variationImage = selectedVariation?.image
-        ? [selectedVariation.image]
-        : [];
-      return [...variationImage, ...product.images];
+      return [
+        ...(selectedVariation?.image ? [selectedVariation.image] : []),
+        ...(product.images || []),
+      ];
     }
     return product?.images || [];
   }, [product, variations, selectedColor, selectedSize]);
@@ -124,10 +124,28 @@ export default function ProductDetailPage({
     );
   };
 
-  const handleColorChange = (event: SelectChangeEvent<string>) =>
-    setSelectedColor(event.target.value);
-  const handleSizeChange = (event: SelectChangeEvent<string>) =>
-    setSelectedSize(event.target.value);
+  const handleChange =
+    (setter: React.Dispatch<React.SetStateAction<string>>) =>
+    (event: React.ChangeEvent<{ value: unknown }>) =>
+      setter(event.target.value as string);
+
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      </>
+    );
+  }
 
   if (!product) {
     return (
@@ -141,7 +159,9 @@ export default function ProductDetailPage({
             height: "100vh",
           }}
         >
-          <CircularProgress />
+          <Typography variant="h6" color="white">
+            Produto não encontrado.
+          </Typography>
         </Box>
       </>
     );
@@ -190,11 +210,7 @@ export default function ProductDetailPage({
                   }}
                 >
                   <IconButton onClick={() => handleImageChange("prev")}>
-                    <ArrowBackIosIcon
-                      sx={{
-                        color: "white",
-                      }}
-                    />
+                    <ArrowBackIosIcon sx={{ color: "white" }} />
                   </IconButton>
                   <IconButton onClick={() => handleImageChange("next")}>
                     <ArrowForwardIosIcon sx={{ color: "white" }} />
@@ -239,10 +255,7 @@ export default function ProductDetailPage({
                           alt={`Thumbnail ${index + 1}`}
                           width={80}
                           height={80}
-                          style={{
-                            objectFit: "cover",
-                            borderRadius: "4px",
-                          }}
+                          style={{ objectFit: "cover", borderRadius: "4px" }}
                         />
                       </IconButton>
                     </Tooltip>
@@ -256,66 +269,51 @@ export default function ProductDetailPage({
               {product.name}
             </Typography>
             <Typography variant="h6" color="inherit">
-              {product.price}
+              {product.price ? `R$${product.price}` : "Preço não disponível"}
             </Typography>
-            {colorOptions.length > 0 && (
-              <FormControl fullWidth margin="normal">
-                <InputLabel id="color-select-label" sx={{ color: "white" }}>
-                  Cor
-                </InputLabel>
-                <Select
-                  labelId="color-select-label"
-                  value={selectedColor}
-                  onChange={handleColorChange}
-                  sx={{ color: "white" }}
-                  MenuProps={{
-                    PaperProps: {
-                      sx: {
-                        bgcolor: theme.palette.background.paper,
-                        color: "black",
-                      },
-                    },
-                  }}
-                >
-                  {colorOptions.map((color) => (
-                    <MenuItem key={color} value={color}>
-                      {color}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            )}
-            {sizeOptions.length > 0 && (
-              <FormControl fullWidth margin="normal">
-                <InputLabel id="size-select-label" sx={{ color: "white" }}>
-                  Tamanho
-                </InputLabel>
-                <Select
-                  labelId="size-select-label"
-                  value={selectedSize}
-                  onChange={handleSizeChange}
-                  sx={{ color: "white" }}
-                  MenuProps={{
-                    PaperProps: {
-                      sx: {
-                        bgcolor: theme.palette.background.paper,
-                        color: "black",
-                      },
-                    },
-                  }}
-                >
-                  {sizeOptions.map((size) => (
-                    <MenuItem key={size} value={size}>
-                      {size}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+            {product.type === "variable" && (
+              <>
+                <FormControl fullWidth margin="normal">
+                  <InputLabel sx={{ color: "white" }} id="color-label">
+                    Cor
+                  </InputLabel>
+                  <Select
+                    sx={{ color: "white" }}
+                    labelId="color-label"
+                    value={selectedColor}
+                    onChange={handleChange(setSelectedColor) as any}
+                  >
+                    {colorOptions.map((color) => (
+                      <MenuItem key={color} value={color}>
+                        {color}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <FormControl fullWidth margin="normal">
+                  <InputLabel sx={{ color: "white" }} id="size-label">
+                    Tamanho
+                  </InputLabel>
+                  <Select
+                    sx={{ color: "white" }}
+                    labelId="size-label"
+                    value={selectedSize}
+                    onChange={handleChange(setSelectedSize) as any}
+                  >
+                    {sizeOptions.map((size) => (
+                      <MenuItem key={size} value={size}>
+                        {size}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </>
             )}
             <Typography variant="body1" color="inherit">
-              {stockStatus} ({stockQuantity} em estoque)
+              {stockStatus} -{" "}
+              {stockQuantity !== null ? `Quantidade: ${stockQuantity}` : ""}
             </Typography>
-            {product.purchasable && <ProductQuantityForm product={product} />}
+            <ProductQuantityForm product={product} />
           </Grid2>
         </Grid2>
       </Box>

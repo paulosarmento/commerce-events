@@ -1,6 +1,18 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+
+import { useState, useEffect, useRef } from "react";
+import {
+  Box,
+  Drawer,
+  List,
+  ListItemButton,
+  ListItemText,
+  IconButton,
+  CircularProgress,
+  Typography,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
 import Header from "../components/Header";
 import {
   getCategories,
@@ -10,42 +22,51 @@ import {
 import { ProductCard } from "../components/ProductCard";
 import { Product } from "../types/product";
 import { Categories } from "../types/category";
-import { Box, CircularProgress } from "@mui/material";
 
 export default function StorePage() {
   const [categories, setCategories] = useState<Categories>([]);
-  const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [showCategories, setShowCategories] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [productsPerPage] = useState<number>(8);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [noProductsMessage, setNoProductsMessage] = useState<string | null>(
+    null
+  );
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const categoriesFetch = await getCategories();
-      setCategories(categoriesFetch);
+      try {
+        setCategories(await getCategories());
+      } catch (error) {
+        console.error("Failed to fetch categories", error);
+      }
     };
-
-    const fetchProducts = async () => {
-      const allProducts =
-        selectedCategories.length === 0
-          ? await getProducts()
-          : await Promise.all(
-              selectedCategories.map((id) => getProductsCategory(id))
-            ).then((results) => results.flat());
-
-      setAllProducts(allProducts);
-      setProducts(allProducts);
-      setCurrentPage(1);
-      setIsLoading(false); // Dados carregados
-    };
-
     fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setIsLoading(true);
+      try {
+        const allProducts =
+          selectedCategory !== null
+            ? await getProductsCategory(selectedCategory)
+            : await getProducts();
+        setProducts(allProducts);
+        setNoProductsMessage(
+          allProducts.length ? null : "No products found in this category."
+        );
+      } catch (error) {
+        console.error("Failed to fetch products", error);
+        setNoProductsMessage("Failed to load products.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
     fetchProducts();
-  }, [selectedCategories]);
+  }, [selectedCategory]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -53,82 +74,135 @@ export default function StorePage() {
         setShowCategories(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleCategoryChange = (categoryId: number) => {
-    setSelectedCategories((prevCategories) =>
-      prevCategories.includes(categoryId)
-        ? prevCategories.filter((id) => id !== categoryId)
-        : [...prevCategories, categoryId]
-    );
-    setIsLoading(true); // Reiniciar carregamento ao mudar de categoria
+    setSelectedCategory((prev) => (prev === categoryId ? null : categoryId));
+    setCurrentPage(1);
+    if (showCategories) {
+      setShowCategories(false); // Fecha o menu ao selecionar uma categoria
+    }
   };
 
-  const toggleCategories = () => {
-    setShowCategories((prev) => !prev);
-  };
-
+  const toggleCategories = () => setShowCategories((prev) => !prev);
   const handlePaginationChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
-    window.scrollTo({ top: 0, behavior: "smooth" }); // Rolar para o topo ao mudar de página
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const indexOfLastProduct = currentPage * productsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const indexOfLastProduct = currentPage * 12;
   const currentProducts = products.slice(
-    indexOfFirstProduct,
+    indexOfLastProduct - 12,
     indexOfLastProduct
   );
-
-  const totalPages = Math.ceil(products.length / productsPerPage);
+  const totalPages = Math.ceil(products.length / 12);
 
   return (
     <>
       <Header />
-      <main className="relative flex flex-col lg:flex-row p-8 pb-20 lg:px-16 mt-20">
-        <button
-          className="fixed top-16 right-8 bg-blue-500 text-white p-2 rounded-lg shadow-lg z-30 lg:hidden"
+      <Box sx={{ display: "flex", mt: "120px" }}>
+        <IconButton
+          sx={{
+            display: { sm: "none" },
+            position: "fixed",
+            top: 100,
+            right: 16,
+            zIndex: 1300,
+            color: "white",
+          }}
           onClick={toggleCategories}
         >
-          {showCategories ? "Hide Categories" : "Show Categories"}
-        </button>
-
-        <aside
-          ref={menuRef}
-          className={`fixed top-0 left-0 h-full lg:relative lg:w-1/4 lg:pr-4 mb-8 lg:mb-0 transition-transform transform ${
-            showCategories ? "translate-x-0 z-40" : "-translate-x-full"
-          } lg:translate-x-0 lg:static bg-white shadow-lg lg:shadow-none lg:bg-transparent lg:flex lg:flex-col lg:items-start lg:gap-4 p-4`}
+          <MenuIcon />
+        </IconButton>
+        <Drawer
+          anchor="left"
+          open={showCategories}
+          onClose={toggleCategories}
+          sx={{
+            display: { sm: "none" },
+            "& .MuiDrawer-paper": {
+              width: 250,
+              backgroundColor: "#333",
+              color: "white",
+            },
+          }}
         >
-          <div className="grid gap-2">
+          <Box sx={{ display: "flex", justifyContent: "flex-end", p: 1 }}>
+            <IconButton onClick={toggleCategories} color="inherit">
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          <List>
             {categories.map((category) => (
-              <div
+              <ListItemButton
                 key={category.id}
-                className={`group relative ${
-                  selectedCategories.includes(category.id)
-                    ? "bg-blue-300"
-                    : "bg-white"
-                } w-full overflow-hidden rounded-lg cursor-pointer hover:bg-blue-100`}
+                selected={selectedCategory === category.id}
+                sx={{
+                  backgroundColor:
+                    selectedCategory === category.id
+                      ? "rgba(255, 255, 255, 0.1)"
+                      : "transparent",
+                  "&.Mui-selected": {
+                    backgroundColor: "rgba(255, 255, 255, 0.2)",
+                  },
+                  color: "white",
+                }}
                 onClick={() => handleCategoryChange(category.id)}
               >
-                <div className="flex flex-col justify-between p-4">
-                  <p className="text-sm font-medium text-neutral-500 text-center">
-                    {category.slug}
-                  </p>
-                </div>
-              </div>
+                <ListItemText primary={category.name} />
+              </ListItemButton>
             ))}
-          </div>
-        </aside>
-
-        <section
-          className={`w-full lg:w-3/4 transition-opacity duration-300 ${
-            showCategories ? "opacity-50" : "opacity-100"
-          }`}
+          </List>
+        </Drawer>
+        <Box
+          component="nav"
+          sx={{
+            width: { sm: 240 },
+            flexShrink: { sm: 0 },
+            display: { xs: "none", sm: "block" },
+          }}
+        >
+          <Drawer
+            variant="permanent"
+            sx={{
+              "& .MuiDrawer-paper": {
+                boxSizing: "border-box",
+                top: 120,
+                width: 240,
+                backgroundColor: "transparent",
+                color: "white",
+              },
+            }}
+            open
+          >
+            <List>
+              {categories.map((category) => (
+                <ListItemButton
+                  key={category.id}
+                  selected={selectedCategory === category.id}
+                  sx={{
+                    backgroundColor:
+                      selectedCategory === category.id
+                        ? "rgba(255, 255, 255, 0.1)"
+                        : "transparent",
+                    "&.Mui-selected": {
+                      backgroundColor: "rgba(255, 255, 255, 0.2)",
+                    },
+                    color: "white",
+                  }}
+                  onClick={() => handleCategoryChange(category.id)}
+                >
+                  <ListItemText primary={category.name} />
+                </ListItemButton>
+              ))}
+            </List>
+          </Drawer>
+        </Box>
+        <Box
+          component="main"
+          sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - 240px)` } }}
         >
           {isLoading ? (
             <Box
@@ -136,43 +210,47 @@ export default function StorePage() {
               flexDirection="column"
               justifyContent="center"
               alignItems="center"
-              height="calc(100vh - 150px)" // Define a altura para centralizar
+              height="calc(100vh - 150px)"
             >
               <CircularProgress />
+            </Box>
+          ) : noProductsMessage ? (
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              height="calc(100vh - 150px)"
+            >
+              <Typography variant="h6">{noProductsMessage}</Typography>
             </Box>
           ) : (
             <>
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-8">
-                {currentProducts.map((product, index) => (
-                  <Link key={index} href={`/products/${product.id}`}>
-                    <ProductCard product={product} />
-                  </Link>
+                {currentProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
                 ))}
               </div>
-
-              {products.length > productsPerPage && (
-                <div className="flex justify-center mt-8">
-                  <nav className="flex gap-2">
-                    {Array.from({ length: totalPages }, (_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handlePaginationChange(index + 1)}
-                        className={`px-4 py-2 border rounded-lg ${
-                          currentPage === index + 1
-                            ? "bg-blue-500 text-white"
-                            : "bg-white text-blue-500"
-                        }`}
-                      >
-                        {index + 1}
-                      </button>
-                    ))}
-                  </nav>
+              <Box display="flex" justifyContent="center" mt={8}>
+                <div className="flex items-center space-x-4">
+                  {Array.from({ length: totalPages }, (_, index) => (
+                    <button
+                      key={index}
+                      className={`px-4 py-2 rounded-lg ${
+                        currentPage === index + 1
+                          ? "bg-blue-500 text-white"
+                          : "bg-white text-black"
+                      } hover:bg-blue-500 hover:text-white`}
+                      onClick={() => handlePaginationChange(index + 1)}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
                 </div>
-              )}
+              </Box>
             </>
           )}
-        </section>
-      </main>
+        </Box>
+      </Box>
     </>
   );
 }

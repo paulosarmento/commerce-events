@@ -1,6 +1,5 @@
 "use client";
 import { Box, Button, Divider, Slider, Typography } from "@mui/material";
-// import { Product } from "../../../models";
 import { useEffect, useState } from "react";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import * as yup from "yup";
@@ -9,7 +8,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
 import { Product } from "@/models";
 import { Total } from "@/app/components/Total";
-// import { Total } from "../../../components/Total";
 
 const schema = yup
   .object({
