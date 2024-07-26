@@ -5,12 +5,10 @@ import {
   Box,
   Typography,
   IconButton,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Tooltip,
   CircularProgress,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import Image from "next/legacy/image";
@@ -21,12 +19,13 @@ import { ProductQuantityForm } from "./ProductQuantityForm";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { useTheme } from "@mui/material/styles";
+import { Button } from "@/app/components/FormButton";
 
 export default function ProductDetailPage({
   params: { id },
-}: {
+}: Readonly<{
   params: { id: string };
-}) {
+}>) {
   const [product, setProduct] = useState<Product | null>(null);
   const [variations, setVariations] = useState<Product[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -35,6 +34,7 @@ export default function ProductDetailPage({
   const [stockQuantity, setStockQuantity] = useState<number | null>(null);
   const [stockStatus, setStockStatus] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
+  const [tabIndex, setTabIndex] = useState(0);
   const theme = useTheme();
 
   const fetchProductData = useCallback(async () => {
@@ -124,10 +124,17 @@ export default function ProductDetailPage({
     );
   };
 
-  const handleChange =
-    (setter: React.Dispatch<React.SetStateAction<string>>) =>
-    (event: React.ChangeEvent<{ value: unknown }>) =>
-      setter(event.target.value as string);
+  const handleColorChange = (color: string) => {
+    setSelectedColor(color);
+  };
+
+  const handleSizeChange = (size: string) => {
+    setSelectedSize(size);
+  };
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabIndex(newValue);
+  };
 
   if (loading) {
     return (
@@ -175,8 +182,8 @@ export default function ProductDetailPage({
   return (
     <Box>
       <Header />
-      <Box mt={10} px={2} color="white">
-        <Grid2 container spacing={2}>
+      <Box mt={20} px={2}>
+        <Grid2 container spacing={8}>
           <Grid2 xs={12} md={6}>
             <Box position="relative" sx={{ height: "500px" }}>
               <Box
@@ -195,6 +202,7 @@ export default function ProductDetailPage({
                     border: `1px solid ${theme.palette.divider}`,
                   }}
                 />
+                {/* setas */}
                 <Box
                   position="absolute"
                   top="0"
@@ -216,6 +224,7 @@ export default function ProductDetailPage({
                     <ArrowForwardIosIcon sx={{ color: "white" }} />
                   </IconButton>
                 </Box>
+                {/* miniaturas */}
                 <Box
                   position="absolute"
                   bottom="0"
@@ -273,48 +282,110 @@ export default function ProductDetailPage({
             </Typography>
             {product.type === "variable" && (
               <>
-                <FormControl fullWidth margin="normal">
-                  <InputLabel sx={{ color: "white" }} id="color-label">
+                <Box my={2}>
+                  <Typography variant="body1" color="inherit">
                     Cor
-                  </InputLabel>
-                  <Select
-                    sx={{ color: "white" }}
-                    labelId="color-label"
-                    value={selectedColor}
-                    onChange={handleChange(setSelectedColor) as any}
-                  >
+                  </Typography>
+                  <Box display="flex" flexWrap="wrap" gap={1} mt={1}>
                     {colorOptions.map((color) => (
-                      <MenuItem key={color} value={color}>
+                      <Button
+                        key={color}
+                        variant={
+                          selectedColor === color ? "primary" : "secondary"
+                        }
+                        onClick={() => handleColorChange(color)}
+                      >
                         {color}
-                      </MenuItem>
+                      </Button>
                     ))}
-                  </Select>
-                </FormControl>
-                <FormControl fullWidth margin="normal">
-                  <InputLabel sx={{ color: "white" }} id="size-label">
+                  </Box>
+                </Box>
+
+                <Box my={2}>
+                  <Typography variant="body1" color="inherit">
                     Tamanho
-                  </InputLabel>
-                  <Select
-                    sx={{ color: "white" }}
-                    labelId="size-label"
-                    value={selectedSize}
-                    onChange={handleChange(setSelectedSize) as any}
-                  >
+                  </Typography>
+                  <Box display="flex" flexWrap="wrap" gap={1} mt={1}>
                     {sizeOptions.map((size) => (
-                      <MenuItem key={size} value={size}>
+                      <Button
+                        key={size}
+                        variant={
+                          selectedSize === size ? "primary" : "secondary"
+                        }
+                        onClick={() => handleSizeChange(size)}
+                      >
                         {size}
-                      </MenuItem>
+                      </Button>
                     ))}
-                  </Select>
-                </FormControl>
+                  </Box>
+                </Box>
               </>
             )}
-            <Typography variant="body1" color="inherit">
-              {stockStatus} -{" "}
-              {stockQuantity !== null ? `Quantidade: ${stockQuantity}` : ""}
-            </Typography>
-            <ProductQuantityForm product={product} />
+            <Box mt={2}>
+              <Typography
+                variant="body1"
+                sx={{ color: stockStatus === "Em estoque" ? "green" : "red" }}
+              >
+                {stockStatus === "Em estoque" ? "Disponível" : "Indisponível"}
+              </Typography>
+              {stockQuantity !== null && (
+                <Typography variant="body2" color="inherit">
+                  Quantidade em estoque: {stockQuantity}
+                </Typography>
+              )}
+            </Box>
+            <Box mt={2}>
+              <ProductQuantityForm
+                product={product}
+                stockQuantity={stockQuantity}
+              />
+            </Box>
           </Grid2>
+          <Box
+            sx={{
+              margin: "auto",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "8px",
+              maxWidth: "calc(100% - 40px)",
+              padding: "0 20px",
+              marginBottom: "44px",
+              minHeight: "200px",
+              overflow: "auto",
+            }}
+            mt={4}
+          >
+            <Tabs
+              value={tabIndex}
+              onChange={handleTabChange}
+              textColor="primary"
+              indicatorColor="primary"
+            >
+              <Tab sx={{ color: "inherit" }} label="Descrição do Produto" />
+              <Tab sx={{ color: "inherit" }} label="Especificações" />
+            </Tabs>
+            {tabIndex === 0 && (
+              <Box mt={2}>
+                <Typography variant="body1" color="inherit">
+                  {product.description || "Descrição não disponível."}
+                </Typography>
+              </Box>
+            )}
+            {tabIndex === 1 && (
+              <Box mt={2}>
+                {product.attributes.map((attribute) => (
+                  <Box key={attribute.id} mt={1}>
+                    <Typography variant="body1" color="inherit">
+                      <strong>{attribute.name}:</strong>{" "}
+                      {attribute.options.join(", ")}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+            )}
+          </Box>
         </Grid2>
       </Box>
     </Box>

@@ -10,7 +10,6 @@ import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Link from "next/link";
 import Image from "next/legacy/image";
-import { Product } from "@/models";
 import Header from "../components/Header";
 
 const products = [

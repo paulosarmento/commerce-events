@@ -1,13 +1,14 @@
 "use client";
-import { Box, Button, Divider, Slider, Typography } from "@mui/material";
+import { Box, Divider, Slider, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import * as yup from "yup";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
 import { Product } from "@/models";
 import { Total } from "@/app/components/Total";
+import { Button } from "@/app/components/FormButton";
+import { ShoppingCartIcon } from "@heroicons/react/24/outline";
 
 const schema = yup
   .object({
@@ -16,8 +17,13 @@ const schema = yup
   })
   .required();
 
-export function ProductQuantityForm(props: { product: Product }) {
-  const { product } = props;
+export function ProductQuantityForm(
+  props: Readonly<{
+    product: Product;
+    stockQuantity: number | null;
+  }>
+) {
+  const { product, stockQuantity } = props;
 
   const { control, register, getValues, watch } = useForm({
     resolver: yupResolver(schema),
@@ -55,11 +61,7 @@ export function ProductQuantityForm(props: { product: Product }) {
           <Total total={total} />
         </Box>
       </Box>
-      <input
-        type="hidden"
-        value={props.product.id}
-        {...register("product_id")}
-      />
+      <input type="hidden" value={product.id} {...register("product_id")} />
       <Controller
         name="quantity"
         control={control}
@@ -73,16 +75,23 @@ export function ProductQuantityForm(props: { product: Product }) {
               step={1}
               marks
               min={1}
-              max={10}
+              max={stockQuantity ?? 1}
               {...field}
+              disabled={!stockQuantity || stockQuantity < 1}
             />
           </Box>
         )}
       />
       <Divider sx={{ mt: 2 }} />
       <Box sx={{ display: "flex", justifyContent: "end", mt: 2 }}>
-        <Button type="submit" sx={{ mt: 3 }} startIcon={<ShoppingCartIcon />}>
+        <Button
+          type="submit"
+          // sx={{ mt: 3 }}
+          // startIcon={<ShoppingCartIcon />}
+          disabled={!stockQuantity || stockQuantity < 1}
+        >
           Colocar no carrinho
+          <ShoppingCartIcon className="size-5" />
         </Button>
       </Box>
     </Box>
