@@ -122,7 +122,7 @@ export const ContactForm = () => {
             <div className="absolute inset-0 bg-emerald-600 blur-2xl opacity-20" />
           </div>
         </motion.form>
-        {isInvalidPhone && toast.error("Errando" || "")}
+        {isInvalidPhone && toast.error("")}
       </div>
     </section>
   );
