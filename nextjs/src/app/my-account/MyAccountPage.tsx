@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { OrderStatus } from "@/models";
 import { useRouter } from "next/navigation";
 import {
   Box,
@@ -10,15 +11,21 @@ import {
   ListItemText,
   Typography,
   IconButton,
-  Button,
   CircularProgress,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Link,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import Header from "../components/Header";
 import { logoutAction } from "../components/LogoutAction";
+import { Button } from "../components/FormButton";
 
-const MyAccountPage = ({ viewerName, orders, posts }: any) => {
+export const MyAccountPage = ({ viewerName, orders, posts }: any) => {
   const [selectedMenu, setSelectedMenu] = useState<string>("welcome");
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false); // Set loading to false immediately
@@ -249,21 +256,96 @@ const MyAccountPage = ({ viewerName, orders, posts }: any) => {
               )}
 
               {selectedMenu === "orders" && (
-                <>
-                  <Typography variant="h6">My Orders</Typography>
-                  <ul>
-                    {orders.length > 0 ? (
-                      orders.map((order: any) => (
-                        <li key={order.id}>
-                          <Typography>Order ID: {order.id}</Typography>
-                          <Typography>Status: {order.status}</Typography>
-                        </li>
-                      ))
-                    ) : (
-                      <Typography>No orders found.</Typography>
-                    )}
-                  </ul>
-                </>
+                <Box>
+                  <Typography variant="h4" sx={{ color: "white" }}>
+                    Meus pedidos
+                  </Typography>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell sx={{ color: "white" }}>ID</TableCell>
+                        <TableCell sx={{ color: "white" }}>Data</TableCell>
+                        <TableCell sx={{ color: "white" }}>Valor</TableCell>
+                        <TableCell sx={{ color: "white" }}>Status</TableCell>
+                        <TableCell sx={{ color: "white" }}></TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {orders.length > 0 ? (
+                        orders.map((order: any) => (
+                          <TableRow key={order.id}>
+                            <TableCell sx={{ color: "white" }}>
+                              {order.id}
+                            </TableCell>
+                            <TableCell sx={{ color: "white" }}>
+                              {order.date_created
+                                ? new Date(
+                                    order.date_created
+                                  ).toLocaleDateString("pt-BR", {
+                                    year: "numeric",
+                                    month: "2-digit",
+                                    day: "2-digit",
+                                  })
+                                : "Data inválida"}
+                            </TableCell>
+
+                            <TableCell sx={{ color: "white" }}>
+                              {new Intl.NumberFormat("pt-BR", {
+                                style: "currency",
+                                currency: "BRL",
+                              }).format(order.total)}
+                            </TableCell>
+                            <TableCell>
+                              {order.status === OrderStatus.PENDING ? (
+                                <Typography
+                                  variant="h5"
+                                  sx={{ color: "white" }}
+                                >
+                                  ⏳
+                                </Typography>
+                              ) : order.status === OrderStatus.PAID ? (
+                                <Typography
+                                  variant="h5"
+                                  sx={{ color: "white" }}
+                                >
+                                  ✔
+                                </Typography>
+                              ) : (
+                                <Typography
+                                  variant="h5"
+                                  sx={{ color: "white" }}
+                                >
+                                  ✖
+                                </Typography>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                onClick={() =>
+                                  router.push(`/my-orders/${order.id}`)
+                                }
+                                // variant="contained"
+                                // component={Link}
+                                // href={`/my-orders/${order.id}`}
+                              >
+                                Detalhes
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell
+                            colSpan={5}
+                            sx={{ color: "white", textAlign: "center" }}
+                          >
+                            <Typography>Nenhum pedido encontrado.</Typography>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </Box>
               )}
 
               {selectedMenu === "posts" && (
@@ -285,13 +367,7 @@ const MyAccountPage = ({ viewerName, orders, posts }: any) => {
 
               {selectedMenu === "logout" && (
                 <Box sx={{ mt: 2 }}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleLogout}
-                  >
-                    Logout
-                  </Button>
+                  <Button onClick={handleLogout}>Logout</Button>
                 </Box>
               )}
             </>

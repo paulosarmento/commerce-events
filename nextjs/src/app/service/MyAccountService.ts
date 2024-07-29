@@ -41,3 +41,8 @@ export const fetchMyAccountData = async () => {
     orders: ordersResponse.data,
   };
 };
+
+export const getOrder = async (orderId: number) => {
+  const response = await woocommerceClient.get(`/orders/${orderId}`);
+  return response.data;
+};

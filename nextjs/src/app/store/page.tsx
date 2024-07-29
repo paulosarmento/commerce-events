@@ -237,9 +237,9 @@ export default function StorePage() {
                       key={index}
                       className={`px-4 py-2 rounded-lg ${
                         currentPage === index + 1
-                          ? "bg-blue-500 text-white"
+                          ? "bg-lime-300 text-black"
                           : "bg-white text-black"
-                      } hover:bg-blue-500 hover:text-white`}
+                      } hover:bg-lime-300 hover:text-black`}
                       onClick={() => handlePaginationChange(index + 1)}
                     >
                       {index + 1}

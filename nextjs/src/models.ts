@@ -32,7 +32,7 @@ export type Attribute = {
 
 export enum OrderStatus {
   PENDING = "pending",
-  PAID = "paid",
+  PAID = "completed",
   FAILED = "failed",
 }
 
