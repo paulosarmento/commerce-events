@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { gql } from "@apollo/client";
 import { apolloClient } from "@/app/lib/apolloClient";
 import Header from "@/app/components/Header";
-import styles from "./Post.module.css";
+import Image from "next/image";
 
 interface Post {
   title: string;
@@ -15,6 +15,7 @@ interface Post {
     };
   };
 }
+
 const GET_POST = gql`
   query GetPost($uri: String!) {
     postBy(uri: $uri) {
@@ -30,7 +31,7 @@ const GET_POST = gql`
   }
 `;
 
-export default function Blog() {
+export default function PostPage() {
   const [post, setPost] = useState<Post | null>(null);
 
   useEffect(() => {
@@ -55,20 +56,30 @@ export default function Blog() {
     <>
       <Header />
       <main className="relative overflow-y-scroll p-8 pb-20 scrollbar-hide lg:px-16 mt-20">
-        <div className="container">
-          <main>
-            {post ? (
-              <article className={styles.post}>
-                <h1 className={styles.title}>{post.title}</h1>
-                <div
-                  className={styles.content}
-                  dangerouslySetInnerHTML={{ __html: post.content }}
-                />
-              </article>
-            ) : (
-              <p>Carregando...</p>
-            )}
-          </main>
+        <div className="container max-w-4xl mx-auto">
+          {post ? (
+            <article className="prose lg:prose-xl mx-auto">
+              <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
+              {post.featuredImage?.node?.sourceUrl && (
+                <div className="mb-8">
+                  <Image
+                    src={post.featuredImage.node.sourceUrl}
+                    alt={post.title}
+                    width={1200}
+                    height={600}
+                    className="w-full h-auto rounded-lg"
+                    unoptimized
+                  />
+                </div>
+              )}
+              <div
+                className="prose prose-lg text-gray-700"
+                dangerouslySetInnerHTML={{ __html: post.content }}
+              />
+            </article>
+          ) : (
+            <p className="text-center">Carregando...</p>
+          )}
         </div>
       </main>
     </>
