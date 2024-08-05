@@ -5,10 +5,11 @@ import * as yup from "yup";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { Product } from "@/models";
 import { Total } from "@/app/components/Total";
 import { Button } from "@/app/components/FormButton";
-import { ShoppingCartIcon } from "@heroicons/react/24/outline";
+import { addToCartAction } from "@/app/server-actions/cart.action";
 
 const schema = yup
   .object({
@@ -17,12 +18,10 @@ const schema = yup
   })
   .required();
 
-export function ProductQuantityForm(
-  props: Readonly<{
-    product: Product;
-    stockQuantity: number | null;
-  }>
-) {
+export function ProductQuantityForm(props: {
+  product: Product;
+  stockQuantity: number | null;
+}) {
   const { product, stockQuantity } = props;
 
   const { control, register, getValues, watch } = useForm({
@@ -33,19 +32,36 @@ export function ProductQuantityForm(
     },
   });
 
-  const [total, setTotal] = useState(product.price * getValues()["quantity"]);
+  const [total, setTotal] = useState(product.price * getValues("quantity"));
 
   useEffect(() => {
-    const subscription = watch((value, { name, type }) => {
-      if (name === "quantity" || name?.includes("attributes")) {
-        setTotal(product.price * getValues()["quantity"]);
+    const subscription = watch((value, { name }) => {
+      if (name === "quantity") {
+        setTotal(product.price * getValues("quantity"));
       }
     });
     return () => subscription.unsubscribe();
-  }, [watch, product, getValues]);
+  }, [watch, getValues, product]);
+
+  const handleAddToCart = async () => {
+    try {
+      const data = {
+        product_id: product.id,
+        quantity: getValues("quantity"),
+      };
+
+      const formData = new FormData();
+      formData.append("product_id", data.product_id);
+      formData.append("quantity", data.quantity.toString());
+
+      await addToCartAction(formData);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
+  };
 
   return (
-    <Box component="form" sx={{ p: 1 }}>
+    <Box component="form" sx={{ p: 1 }} action={handleAddToCart}>
       <Box
         sx={{
           display: "flex",
@@ -66,7 +82,7 @@ export function ProductQuantityForm(
         name="quantity"
         control={control}
         defaultValue={1}
-        render={({ field, fieldState }) => (
+        render={({ field }) => (
           <Box sx={{ mt: 1 }}>
             <Typography>Quantidade</Typography>
             <Slider
@@ -84,12 +100,7 @@ export function ProductQuantityForm(
       />
       <Divider sx={{ mt: 2 }} />
       <Box sx={{ display: "flex", justifyContent: "end", mt: 2 }}>
-        <Button
-          type="submit"
-          // sx={{ mt: 3 }}
-          // startIcon={<ShoppingCartIcon />}
-          disabled={!stockQuantity || stockQuantity < 1}
-        >
+        <Button disabled={!stockQuantity || stockQuantity < 1}>
           Colocar no carrinho
           <ShoppingCartIcon className="size-5" />
         </Button>

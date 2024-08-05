@@ -38,15 +38,17 @@ const GET_POSTS = gql`
 
 export default function Blog() {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await apolloClient.query({ query: GET_POSTS });
-        const postsData = response?.data?.posts?.nodes;
+        const { data } = await apolloClient.query({ query: GET_POSTS });
+        const postsData = data?.posts?.nodes || [];
         setPosts(postsData);
       } catch (error) {
-        console.error("Erro ao fazer a solicitação GraphQL:", error);
+        console.error("Error fetching posts:", error);
+        setError("Failed to load posts.");
       }
     };
 
@@ -58,7 +60,9 @@ export default function Blog() {
       <Header />
       <main className="relative overflow-y-scroll p-8 pb-20 scrollbar-hide lg:px-16 mt-20">
         <div className="container py-32 grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(350px,1fr))] gap-x-4 gap-y-6">
-          {posts.length > 0 ? (
+          {error ? (
+            <p>{error}</p>
+          ) : posts.length > 0 ? (
             posts.map((post, i) => (
               <motion.div
                 key={i}
@@ -91,7 +95,7 @@ const PostCard = ({ post }: PostCardProps) => {
           width={380}
           height={200}
           className="w-full h-full object-cover group-hover:scale-110 duration-500 transition-all"
-          alt={`Thumbnail do post ${post.title}`}
+          alt={`Thumbnail for post ${post.title}`}
           src={post.featuredImage.node.sourceUrl}
           unoptimized
         />

@@ -17,13 +17,12 @@ import {
   TableRow,
   TableCell,
   TableBody,
-  Link,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import Header from "../components/Header";
-import { logoutAction } from "../components/LogoutAction";
 import { Button } from "../components/FormButton";
+import { logoutAction } from "../server-actions/auth.action";
 
 export const MyAccountPage = ({ viewerName, orders, posts }: any) => {
   const [selectedMenu, setSelectedMenu] = useState<string>("welcome");
@@ -56,6 +55,7 @@ export const MyAccountPage = ({ viewerName, orders, posts }: any) => {
 
   const handleLogout = async () => {
     try {
+      localStorage.clear();
       await logoutAction();
       router.push("/auth/login");
     } catch (error) {

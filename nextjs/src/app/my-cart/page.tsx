@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Avatar,
   Box,
@@ -13,65 +14,57 @@ import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Link from "next/link";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import React from "react";
 import { Total } from "../components/Total";
-
-const products = [
-  {
-    id: "1",
-    name: "Camisa",
-    description: "Camisa branca",
-    price: 100,
-    image_url: "https://source.unsplash.com/random?product",
-    category_id: "1",
-  },
-  {
-    id: "2",
-    name: "Calça",
-    description: "Calça jeans",
-    price: 100,
-    image_url: "https://source.unsplash.com/random?product",
-    category_id: "1",
-  },
-];
-
-const cart = {
-  items: [
-    {
-      product_id: "1",
-      quantity: 2,
-      total: 200,
-    },
-    {
-      product_id: "2",
-      quantity: 1,
-      total: 100,
-    },
-  ],
-  total: 1000,
-};
+import { removeItemFromCartAction } from "../server-actions/cart.action";
+import { getCart } from "../service/CartService";
+import { getProductsByIds } from "../service/ProductService";
+import Header from "../components/Header";
 
 async function MyCartPage() {
+  const cart = getCart();
+  // console.log(cart);
+
+  // Obtendo os produtos por IDs
+  const products = await getProductsByIds(
+    cart.items.map((item) => item.product_id)
+  );
+
   return (
-    <Box>
-      <Typography variant="h3" sx={{ color: "white" }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100vh",
+        gap: "8px",
+      }}
+    >
+      <Header />
+      <Typography variant="h3">
         <ShoppingCartIcon /> Meu carrinho
       </Typography>
       <Grid2 container>
-        <Grid2 xs={10} sm={7} md={4}>
+        <Grid2 xs={12} md={7} sx={{ p: 2 }}>
           <List>
-            {cart.items.map((item, key) => {
+            {cart.items.map((item, index) => {
               const product = products.find(
-                (product) => product.id === item.product_id
-              )!;
+                (product: any) => product.id === item.product_id
+              );
+
+              // Verificar se o produto foi encontrado
+              if (!product) return null;
 
               return (
-                <React.Fragment key={key}>
+                <React.Fragment key={index}>
                   <ListItem
                     sx={{ display: "flex", alignItems: "flex-start", mt: 3 }}
                   >
                     <ListItemAvatar>
-                      <Avatar src={product.image_url} />
+                      <Avatar
+                        src={product.images?.[0]?.src}
+                        alt={product.name}
+                      />
                     </ListItemAvatar>
                     <ListItemText
                       primary={
@@ -79,7 +72,6 @@ async function MyCartPage() {
                           sx={{
                             display: "flex",
                             justifyContent: "space-between",
-                            color: "white",
                           }}
                         >
                           <Typography variant="button">
@@ -98,8 +90,8 @@ async function MyCartPage() {
                   <ListItem
                     sx={{ display: "flex", justifyContent: "end", p: 0 }}
                   >
-                    <form>
-                      <input type="hidden" name="index" value={key} />
+                    <form action={removeItemFromCartAction}>
+                      <input type="hidden" name="index" value={index} />
                       <Button
                         color="error"
                         startIcon={<DeleteIcon />}
@@ -115,9 +107,7 @@ async function MyCartPage() {
             })}
             {!cart.items.length && (
               <ListItem>
-                <ListItemText sx={{ color: "white" }}>
-                  Nenhum item no carrinho
-                </ListItemText>
+                <ListItemText>Nenhum item no carrinho</ListItemText>
               </ListItem>
             )}
           </List>
@@ -126,19 +116,11 @@ async function MyCartPage() {
           </Box>
           <Box sx={{ display: "flex", justifyContent: "end", mt: 2 }}>
             {cart.items.length ? (
-              <Button
-                LinkComponent={Link}
-                href="/checkout"
-                sx={{ color: "white" }}
-              >
+              <Button LinkComponent={Link} href="/checkout">
                 Finalizar compra
               </Button>
             ) : (
-              <Button
-                LinkComponent={Link}
-                href="/products"
-                sx={{ color: "white" }}
-              >
+              <Button LinkComponent={Link} href="/store">
                 Continuar comprando
               </Button>
             )}

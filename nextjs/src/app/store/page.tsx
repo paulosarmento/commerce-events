@@ -24,21 +24,23 @@ import { Product } from "../types/product";
 import { Categories } from "../types/category";
 
 export default function StorePage() {
-  const [categories, setCategories] = useState<Categories>([]);
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [showCategories, setShowCategories] = useState<boolean>(false);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [noProductsMessage, setNoProductsMessage] = useState<string | null>(
-    null
-  );
+  const [state, setState] = useState({
+    categories: [] as Categories,
+    selectedCategory: null as number | null,
+    products: [] as Product[],
+    showCategories: false,
+    currentPage: 1,
+    isLoading: true,
+    noProductsMessage: null as string | null,
+  });
+
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        setCategories(await getCategories());
+        const categories = await getCategories();
+        setState((prevState) => ({ ...prevState, categories }));
       } catch (error) {
         console.error("Failed to fetch categories", error);
       }
@@ -48,30 +50,37 @@ export default function StorePage() {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      setIsLoading(true);
+      setState((prevState) => ({ ...prevState, isLoading: true }));
       try {
-        const allProducts =
-          selectedCategory !== null
-            ? await getProductsCategory(selectedCategory)
+        const products =
+          state.selectedCategory !== null
+            ? await getProductsCategory(state.selectedCategory)
             : await getProducts();
-        setProducts(allProducts);
-        setNoProductsMessage(
-          allProducts.length ? null : "No products found in this category."
-        );
+
+        setState((prevState) => ({
+          ...prevState,
+          products,
+          noProductsMessage: products.length
+            ? null
+            : "No products found in this category.",
+          isLoading: false,
+        }));
       } catch (error) {
         console.error("Failed to fetch products", error);
-        setNoProductsMessage("Failed to load products.");
-      } finally {
-        setIsLoading(false);
+        setState((prevState) => ({
+          ...prevState,
+          noProductsMessage: "Failed to load products.",
+          isLoading: false,
+        }));
       }
     };
     fetchProducts();
-  }, [selectedCategory]);
+  }, [state.selectedCategory]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setShowCategories(false);
+        setState((prevState) => ({ ...prevState, showCategories: false }));
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -79,25 +88,32 @@ export default function StorePage() {
   }, []);
 
   const handleCategoryChange = (categoryId: number) => {
-    setSelectedCategory((prev) => (prev === categoryId ? null : categoryId));
-    setCurrentPage(1);
-    if (showCategories) {
-      setShowCategories(false); // Fecha o menu ao selecionar uma categoria
-    }
+    setState((prevState) => ({
+      ...prevState,
+      selectedCategory:
+        prevState.selectedCategory === categoryId ? null : categoryId,
+      currentPage: 1,
+      showCategories: false,
+    }));
   };
 
-  const toggleCategories = () => setShowCategories((prev) => !prev);
+  const toggleCategories = () =>
+    setState((prevState) => ({
+      ...prevState,
+      showCategories: !prevState.showCategories,
+    }));
+
   const handlePaginationChange = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
+    setState((prevState) => ({ ...prevState, currentPage: pageNumber }));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const indexOfLastProduct = currentPage * 12;
-  const currentProducts = products.slice(
+  const indexOfLastProduct = state.currentPage * 12;
+  const currentProducts = state.products.slice(
     indexOfLastProduct - 12,
     indexOfLastProduct
   );
-  const totalPages = Math.ceil(products.length / 12);
+  const totalPages = Math.ceil(state.products.length / 12);
 
   return (
     <>
@@ -118,7 +134,7 @@ export default function StorePage() {
         </IconButton>
         <Drawer
           anchor="left"
-          open={showCategories}
+          open={state.showCategories}
           onClose={toggleCategories}
           sx={{
             display: { sm: "none" },
@@ -135,13 +151,13 @@ export default function StorePage() {
             </IconButton>
           </Box>
           <List>
-            {categories.map((category) => (
+            {state.categories.map((category) => (
               <ListItemButton
                 key={category.id}
-                selected={selectedCategory === category.id}
+                selected={state.selectedCategory === category.id}
                 sx={{
                   backgroundColor:
-                    selectedCategory === category.id
+                    state.selectedCategory === category.id
                       ? "rgba(255, 255, 255, 0.1)"
                       : "transparent",
                   "&.Mui-selected": {
@@ -178,13 +194,13 @@ export default function StorePage() {
             open
           >
             <List>
-              {categories.map((category) => (
+              {state.categories.map((category) => (
                 <ListItemButton
                   key={category.id}
-                  selected={selectedCategory === category.id}
+                  selected={state.selectedCategory === category.id}
                   sx={{
                     backgroundColor:
-                      selectedCategory === category.id
+                      state.selectedCategory === category.id
                         ? "rgba(255, 255, 255, 0.1)"
                         : "transparent",
                     "&.Mui-selected": {
@@ -204,7 +220,7 @@ export default function StorePage() {
           component="main"
           sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - 240px)` } }}
         >
-          {isLoading ? (
+          {state.isLoading ? (
             <Box
               display="flex"
               flexDirection="column"
@@ -214,14 +230,14 @@ export default function StorePage() {
             >
               <CircularProgress />
             </Box>
-          ) : noProductsMessage ? (
+          ) : state.noProductsMessage ? (
             <Box
               display="flex"
               justifyContent="center"
               alignItems="center"
               height="calc(100vh - 150px)"
             >
-              <Typography variant="h6">{noProductsMessage}</Typography>
+              <Typography variant="h6">{state.noProductsMessage}</Typography>
             </Box>
           ) : (
             <>
@@ -236,7 +252,7 @@ export default function StorePage() {
                     <button
                       key={index}
                       className={`px-4 py-2 rounded-lg ${
-                        currentPage === index + 1
+                        state.currentPage === index + 1
                           ? "bg-lime-300 text-black"
                           : "bg-white text-black"
                       } hover:bg-lime-300 hover:text-black`}

@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { gql } from "@apollo/client";
 import { apolloClient } from "@/app/lib/apolloClient";
@@ -33,19 +34,21 @@ const GET_POST = gql`
 
 export default function PostPage() {
   const [post, setPost] = useState<Post | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchPost = async () => {
       try {
         const uri = window.location.pathname.replace("/", "");
-        const response = await apolloClient.query({
+        const { data } = await apolloClient.query({
           query: GET_POST,
           variables: { uri },
         });
-        const postData = response?.data?.postBy;
-        setPost(postData);
+        setPost(data.postBy);
       } catch (error) {
-        console.error("Erro ao fazer a solicitação GraphQL:", error);
+        console.error("Error fetching post:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -57,7 +60,9 @@ export default function PostPage() {
       <Header />
       <main className="relative overflow-y-scroll p-8 pb-20 scrollbar-hide lg:px-16 mt-20">
         <div className="container max-w-4xl mx-auto">
-          {post ? (
+          {loading ? (
+            <p className="text-center">Carregando...</p>
+          ) : post ? (
             <article className="prose lg:prose-xl mx-auto">
               <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
               {post.featuredImage?.node?.sourceUrl && (
@@ -78,7 +83,7 @@ export default function PostPage() {
               />
             </article>
           ) : (
-            <p className="text-center">Carregando...</p>
+            <p className="text-center">Post não encontrado</p>
           )}
         </div>
       </main>

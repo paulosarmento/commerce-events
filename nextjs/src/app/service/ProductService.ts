@@ -48,7 +48,7 @@ export const getProductsCategory = async (
     setCachedData(cacheKey, response.data);
     return response.data;
   } catch (error) {
-    throw new Error(`Error fetching products: ${error}`);
+    throw new Error(`Error fetching products by category: ${error}`);
   }
 };
 
@@ -88,6 +88,7 @@ export const getProducts = async (): Promise<any> => {
         per_page: 100,
       },
     });
+
     setCachedData(cacheKey, response.data);
     return response.data;
   } catch (error) {
@@ -121,6 +122,21 @@ export const getProductVariation = async (id: number): Promise<any> => {
     setCachedData(cacheKey, response.data);
     return response.data;
   } catch (error) {
-    throw new Error(`Error fetching product: ${error}`);
+    throw new Error(`Error fetching product variation: ${error}`);
+  }
+};
+
+export const getProductsByIds = async (ids: number[]): Promise<any> => {
+  try {
+    const response = await woocommerceClient.get("/products", {
+      params: {
+        include: ids.join(","), // Converte array para string separada por vírgulas
+      },
+    });
+
+    // Mapear os produtos diretamente se já tiverem as informações completas
+    return response.data;
+  } catch (error) {
+    throw new Error(`Error fetching products: ${error}`);
   }
 };
