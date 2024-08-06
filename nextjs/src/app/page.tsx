@@ -1,10 +1,10 @@
 import Header from "@/app/components/Header";
-import { MovieRow } from "./components/MovieRow";
 import { Banner } from "./components/Banner";
 import { getFeaturedMovie, getMoviesByGenre } from "./service/MovieService";
 import { getRandomInt } from "./utils/getRandomInt";
 import { ContactForm } from "./components/contact-form";
 import { Toaster } from "./components/toaster";
+import { MovieRow } from "./components/movie/MovieRow";
 
 export default async function Home() {
   const randomMovieId = getRandomInt(101, 106);

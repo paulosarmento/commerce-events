@@ -10,8 +10,8 @@ export const UserProfile = ({ name }: { name: string }) => {
       <Image
         src="/profile.png"
         alt="profile"
-        width={50}
-        height={50}
+        width={44}
+        height={44}
         className="rounded cursor-pointer"
       />
     </div>

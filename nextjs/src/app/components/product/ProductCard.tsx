@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Product } from "../types/product";
 import { ProductInfo } from "./ProductInfo";
+import { Product } from "@/app/types/product";
 
 export const ProductCard = ({ product }: { product: Product }) => (
   <Link href={`/products/${product.id}`} passHref>

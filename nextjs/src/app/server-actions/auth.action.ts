@@ -1,7 +1,12 @@
 "use server";
 
 import { gql } from "@apollo/client";
-import { getAuthClient, onLogout } from "@faustwp/experimental-app-router";
+import {
+  getAuthClient,
+  onLogin,
+  onLogout,
+} from "@faustwp/experimental-app-router";
+import { redirect } from "next/navigation";
 
 export const getUserName = async () => {
   const client = await getAuthClient();
@@ -22,4 +27,14 @@ export const getUserName = async () => {
 };
 export async function logoutAction() {
   return await onLogout();
+}
+
+export async function loginAction(prevData: any, formData: FormData) {
+  const res = await onLogin(formData);
+
+  if (res.error) {
+    return res;
+  }
+
+  redirect("/my-account");
 }

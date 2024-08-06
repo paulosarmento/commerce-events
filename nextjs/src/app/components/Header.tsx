@@ -60,14 +60,14 @@ export default function Header() {
         <Link href="/">
           <Logo />
         </Link>
-        <NavLinks />
-      </div>
-      <div className="flex items-center space-x-2 md:space-x-8">
         <SearchForm
           searchTerm={searchTerm}
           onSearchTermChange={onSearchTermChange}
           onSearch={onSearch}
         />
+        <NavLinks />
+      </div>
+      <div className="flex items-center space-x-2 md:space-x-8">
         <Link href="/my-cart">
           <MdShoppingBasket size={36} color="#FFF" />
         </Link>

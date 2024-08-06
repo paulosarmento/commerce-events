@@ -8,7 +8,7 @@ import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { Product } from "@/models";
 import { Total } from "@/app/components/Total";
-import { Button } from "@/app/components/FormButton";
+import { Button } from "@/app/components/button/FormButton";
 import { addToCartAction } from "@/app/server-actions/cart.action";
 
 const schema = yup

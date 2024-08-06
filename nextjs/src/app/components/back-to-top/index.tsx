@@ -1,7 +1,7 @@
 "use client";
 
 import { TbArrowNarrowUp } from "react-icons/tb";
-import { Button } from "../FormButton";
+import { Button } from "../button/FormButton";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
 

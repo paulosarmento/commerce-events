@@ -19,9 +19,9 @@ import {
   getProducts,
   getProductsCategory,
 } from "../service/ProductService";
-import { ProductCard } from "../components/ProductCard";
 import { Product } from "../types/product";
 import { Categories } from "../types/category";
+import { ProductCard } from "../components/product/ProductCard";
 
 export default function StorePage() {
   const [state, setState] = useState({

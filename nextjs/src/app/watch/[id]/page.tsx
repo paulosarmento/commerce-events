@@ -1,5 +1,5 @@
 import Header from "@/app/components/Header";
-import Player from "@/app/components/Player";
+import Player from "@/app/components/movie/Player";
 import { getMovieById } from "@/app/service/MovieService";
 
 interface IWatchProps {

@@ -19,7 +19,7 @@ import { ProductQuantityForm } from "./ProductQuantityForm";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { useTheme } from "@mui/material/styles";
-import { Button } from "@/app/components/FormButton";
+import { Button } from "@/app/components/button/FormButton";
 
 export default function ProductDetailPage({
   params: { id },

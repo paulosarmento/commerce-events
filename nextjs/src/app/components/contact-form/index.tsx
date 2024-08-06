@@ -4,7 +4,7 @@ import { z } from "zod";
 import { SectionTitle } from "../section-title";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "../FormButton";
+import { Button } from "../button/FormButton";
 import { HiArrowNarrowRight } from "react-icons/hi";
 import { motion } from "framer-motion";
 import axios from "axios";

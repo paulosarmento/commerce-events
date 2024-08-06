@@ -1,7 +1,7 @@
 "use client";
 import { FormEvent, useState } from "react";
 import { AuthForm } from "@/app/components/AuthForm";
-import { loginAction } from "./action";
+import { loginAction } from "@/app/server-actions/auth.action";
 
 export default function LoginForm() {
   const [state, setState] = useState({ error: "", pending: false });

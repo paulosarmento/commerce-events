@@ -1,6 +1,6 @@
 import { authenticateUser, getOrders } from "../service/MyAccountService";
-import MyAccountPage from "./MyAccountPage";
 import { redirect } from "next/navigation";
+import { MyAccountPage } from "./MyAccountPage";
 
 const MyAccountData = async () => {
   try {

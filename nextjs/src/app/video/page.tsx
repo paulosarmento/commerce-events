@@ -1,5 +1,5 @@
 import Header from "../components/Header";
-import { MovieRow } from "../components/MovieRow";
+import { MovieRow } from "../components/movie/MovieRow";
 import { getMoviesByGenre } from "../service/MovieService";
 
 export default async function VideoPage() {
