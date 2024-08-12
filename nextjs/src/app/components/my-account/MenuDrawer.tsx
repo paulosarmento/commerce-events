@@ -84,6 +84,11 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
             onClick={() => onMenuClick("posts")}
           />
           <MenuListItemButton
+            text="ADDRESSES"
+            selected={selectedMenu === "addresses"}
+            onClick={() => onMenuClick("addresses")}
+          />
+          <MenuListItemButton
             text="MY ACCOUNT"
             selected={selectedMenu === "account"}
             onClick={() => onMenuClick("account")}
@@ -135,6 +140,11 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
               text="MY POSTS"
               selected={selectedMenu === "posts"}
               onClick={() => onMenuClick("posts")}
+            />
+            <MenuListItemButton
+              text="ADDRESSES"
+              selected={selectedMenu === "addresses"}
+              onClick={() => onMenuClick("addresses")}
             />
             <MenuListItemButton
               text="MY ACCOUNT"

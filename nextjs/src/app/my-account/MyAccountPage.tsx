@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import Header from "../components/Header";
@@ -10,8 +9,10 @@ import MenuDrawer from "../components/my-account/MenuDrawer";
 import Loading from "../components/my-account/Loading";
 import OrderList from "../components/my-account/OrderList";
 import PostList from "../components/my-account/PostList";
+import AddressesList from "../components/my-account/address/AddressesList";
+import Account from "../components/my-account/Account";
 
-export const MyAccountPage = ({ viewerName, orders, posts }: any) => {
+export const MyAccountPage = ({ viewer, orders, posts, customer }: any) => {
   const [selectedMenu, setSelectedMenu] = useState<string>("welcome");
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -61,18 +62,19 @@ export const MyAccountPage = ({ viewerName, orders, posts }: any) => {
             {selectedMenu === "welcome" && (
               <Box>
                 <Typography variant="h5" sx={{ color: "white" }}>
-                  Bem-vindo, {viewerName}!
+                  Bem-vindo, {viewer.name}!
                 </Typography>
               </Box>
             )}
             {selectedMenu === "orders" && <OrderList orders={orders} />}
             {selectedMenu === "posts" && <PostList posts={posts} />}
-            {selectedMenu === "account" && (
-              <Box>
-                <Typography variant="h5" sx={{ color: "white" }}>
-                  Minha conta
-                </Typography>
-              </Box>
+            {selectedMenu === "account" && <Account account={customer} />}
+            {selectedMenu === "addresses" && (
+              <AddressesList
+                viewer={viewer}
+                billing={customer.billing}
+                shipping={customer.shipping}
+              />
             )}
             {selectedMenu === "logout" && (
               <Box>

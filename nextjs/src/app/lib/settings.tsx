@@ -5,7 +5,7 @@ export const getAppSettings = async (): Promise<{
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
-        theme: "dark",
+        theme: "light",
         language: "en",
       });
     }, 1000);

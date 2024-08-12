@@ -3,6 +3,8 @@
 import { redirect } from "next/navigation";
 import { clearCart, getCart } from "../service/CartService";
 import { createOrder } from "../service/OrderService";
+import { woocommerceClient } from "../lib/wooCommerce";
+import { Address } from "../service/MyAccountService";
 
 export async function checkoutAction(formData: FormData) {
   const cart = getCart();
@@ -25,3 +27,14 @@ export async function checkoutAction(formData: FormData) {
 
   redirect(`/checkout/${order.id}/success`);
 }
+
+export const addAddress = async (viewerId: number, address: Address) => {
+  try {
+    const response = await woocommerceClient.put(`/customers/${viewerId}`, {
+      address,
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(`Error adding address: ${error}`);
+  }
+};

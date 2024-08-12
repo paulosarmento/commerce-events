@@ -7,9 +7,12 @@ import {
   onLogout,
 } from "@faustwp/experimental-app-router";
 import { redirect } from "next/navigation";
+import { Address } from "../service/MyAccountService";
+import { woocommerceClient } from "../lib/wooCommerce";
 
 export const getUserName = async () => {
   const client = await getAuthClient();
+
   if (!client) {
     throw new Error("Not authenticated");
   }
