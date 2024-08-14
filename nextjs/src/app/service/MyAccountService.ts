@@ -33,6 +33,37 @@ export const authenticateUser = async () => {
     throw new Error(`Error authenticating user: ${error}`);
   }
 };
+// export const authenticateUser = async () => {
+//   const client = await getAuthClient();
+
+//   if (!client) {
+//     throw new Error("Not authenticated");
+//   }
+
+//   try {
+//     const { data } = await client.query({
+//       query: gql`
+//         query GetViewer {
+//           viewer {
+//             id
+//             name
+//             databaseId
+//             posts {
+//               nodes {
+//                 id
+//                 title
+//               }
+//             }
+//           }
+//         }
+//       `,
+//     });
+
+//     return data.viewer;
+//   } catch (error) {
+//     throw new Error(`Error authenticating user: ${error}`);
+//   }
+// };
 
 export const getOrder = async (orderId: number) => {
   try {

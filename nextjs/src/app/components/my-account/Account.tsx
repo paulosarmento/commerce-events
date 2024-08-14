@@ -1,11 +1,10 @@
 import { Box, Typography } from "@mui/material";
 
-interface CustomerProps {}
-
-const Account: React.FC<any> = ({ customer }) => {
+const Account: React.FC<any> = ({ username, billing, role }) => {
+  // console.log(billing);
   return (
     <Box>
-      <Typography variant="h6">My Account</Typography>
+      <Typography variant="h6">{role}</Typography>
     </Box>
   );
 };

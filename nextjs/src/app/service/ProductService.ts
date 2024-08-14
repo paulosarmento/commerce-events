@@ -126,16 +126,17 @@ export const getProductVariation = async (id: number): Promise<any> => {
   }
 };
 
-export const getProductsByIds = async (ids: number[]): Promise<any> => {
+export const getProductsByIds = async (ids: number[]): Promise<any[]> => {
   try {
-    const response = await woocommerceClient.get("/products", {
-      params: {
-        include: ids.join(","), // Converte array para string separada por vírgulas
-      },
-    });
+    const productRequests = ids.map((id) =>
+      woocommerceClient.get(`/products/${id}`)
+    );
 
-    // Mapear os produtos diretamente se já tiverem as informações completas
-    return response.data;
+    const responses = await Promise.all(productRequests);
+
+    const products = responses.map((response) => response.data);
+
+    return products;
   } catch (error) {
     throw new Error(`Error fetching products: ${error}`);
   }

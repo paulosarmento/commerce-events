@@ -22,7 +22,7 @@ import Header from "../components/Header";
 
 async function MyCartPage() {
   const cart = getCart();
-  // console.log(cart);
+  console.log(cart);
 
   // Obtendo os produtos por IDs
   const products = await getProductsByIds(

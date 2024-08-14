@@ -11,6 +11,7 @@ const MyAccountData = async () => {
     const viewer = await authenticateUser();
     const orders = await getOrders(viewer.databaseId);
     const customer = await getCustomer(viewer.databaseId);
+    // console.log(customer);
 
     return (
       <MyAccountPage

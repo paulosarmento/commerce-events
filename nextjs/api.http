@@ -4,7 +4,7 @@ GET https://solarsports.com.br/wp-json/wc/v3/
 
 ###
 
-PATCH https://alimentofit.com.br//wp-json/wc/v3/customers/1
+PATCH https://solarsports.com.br/wp-json/wc/v3/customers/1
 Content-Type: application/json
 Authorization: Basic ck_ca06b727e37e3cc63fff017a4068aedd9ca0f6ad:cs_ed5275b8e1b6bbe2fa808220df6be06af7fcd643
 
