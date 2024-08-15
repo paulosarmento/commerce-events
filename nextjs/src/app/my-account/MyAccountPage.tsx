@@ -82,6 +82,8 @@ export const MyAccountPage = ({ viewer, orders, posts, customer }: any) => {
                 shipping={customer.shipping}
               />
             )}
+            {selectedMenu === "events" && <>Eventos</>}
+            {selectedMenu === "products" && <>Produtos</>}
             {selectedMenu === "logout" && (
               <Box>
                 <Typography variant="h5" sx={{ color: "white" }}>
@@ -96,72 +98,3 @@ export const MyAccountPage = ({ viewer, orders, posts, customer }: any) => {
     </Box>
   );
 };
-
-interface MetaData {
-  id: number;
-  key: string;
-  value: any; // Use a tipagem específica caso conheça o tipo exato do valor
-}
-
-interface Links {
-  self: Array<Record<string, any>>;
-  collection: Array<Record<string, any>>;
-}
-
-interface BillingDetails {
-  firstName: string;
-  lastName: string;
-  company: string;
-  address1: string;
-  address2: string;
-  city: string;
-  postcode: string;
-  country: string;
-  state: string;
-  email: string;
-  phone: string;
-  number: string;
-  neighborhood: string;
-  personType: string;
-  cpf: string;
-  rg: string;
-  cnpj: string;
-  ie: string;
-  birthdate: string;
-  gender: string;
-  cellphone: string;
-}
-
-interface ShippingDetails {
-  firstName: string;
-  lastName: string;
-  company: string;
-  address1: string;
-  address2: string;
-  city: string;
-  postcode: string;
-  country: string;
-  state: string;
-  phone: string;
-  number: string;
-  neighborhood: string;
-}
-
-interface UserProps {
-  id: number;
-  dateCreated: string;
-  dateCreatedGmt: string;
-  dateModified: string;
-  dateModifiedGmt: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-  username: string;
-  billing: BillingDetails;
-  shipping: ShippingDetails;
-  isPayingCustomer: boolean;
-  avatarUrl: string;
-  metaData: MetaData[];
-  links: Links;
-}

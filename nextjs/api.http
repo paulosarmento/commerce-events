@@ -47,3 +47,85 @@ Authorization: Basic ck_ca06b727e37e3cc63fff017a4068aedd9ca0f6ad:cs_ed5275b8e1b6
     "neighborhood": "Outro Bairro"
   }
 }
+
+###
+GET https://reimagined-space-meme-xvgg556ppgr395r-3000.app.github.dev/events
+
+###
+# @name createEvent
+POST https://reimagined-space-meme-xvgg556ppgr395r-3000.app.github.dev/events
+Content-Type: application/json
+
+{
+  "name": "New Eventss",
+  "description": "This is a new event",
+  "date": "2024-08-30",
+  "price": 100
+ 
+}
+
+###
+@eventId = {{ createEvent.response.body.id }}
+
+###
+GET https://reimagined-space-meme-xvgg556ppgr395r-3000.app.github.dev/events/{{eventId}}
+
+###
+DELETE https://reimagined-space-meme-xvgg556ppgr395r-3000.app.github.dev/events/{{eventId}}
+
+###
+PATCH  https://reimagined-space-meme-xvgg556ppgr395r-3000.app.github.dev/events/{{eventId}}
+Content-Type: application/json
+
+{
+  "name": "New Eventsss",
+  "price": 2
+}
+
+
+###
+GET https://reimagined-space-meme-xvgg556ppgr395r-3000.app.github.dev/events/{{eventId}}/spots
+
+
+###
+# @name createSpot
+POST https://reimagined-space-meme-xvgg556ppgr395r-3000.app.github.dev/events/{{eventId}}/spots
+Content-Type: application/json
+
+{
+  "name": "A1"
+}
+
+###
+@spotId = {{ createSpot.response.body.id }}
+
+
+###
+GET https://reimagined-space-meme-xvgg556ppgr395r-3000.app.github.dev/events/{{eventId}}/spots/{{spotId}}
+
+
+###
+
+PATCH https://reimagined-space-meme-xvgg556ppgr395r-3000.app.github.dev/events/{{eventId}}/spots/{{spotId}}
+Content-Type: application/json
+
+{
+  "name": "A4"
+}
+
+###
+DELETE https://reimagined-space-meme-xvgg556ppgr395r-3000.app.github.dev/events/{{eventId}}/spots/{{spotId}}
+
+
+###
+@spotName = {{ createSpot.response.body.name}}
+
+POST https://reimagined-space-meme-xvgg556ppgr395r-3000.app.github.dev/events/{{eventId}}/reserve
+Content-Type: application/json
+X-Api-Token: 444
+
+{
+  "spots": ["{{spotName}}"],
+  "ticket_kind": "full",
+  "email": "teste@test.com"
+}

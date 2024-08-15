@@ -94,6 +94,16 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
             onClick={() => onMenuClick("account")}
           />
           <MenuListItemButton
+            text="MY EVENTS"
+            selected={selectedMenu === "events"}
+            onClick={() => onMenuClick("events")}
+          />
+          <MenuListItemButton
+            text="MY PRODUCTS"
+            selected={selectedMenu === "products"}
+            onClick={() => onMenuClick("products")}
+          />
+          <MenuListItemButton
             text="LOGOUT"
             selected={selectedMenu === "logout"}
             onClick={() => onMenuClick("logout")}
@@ -150,6 +160,16 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
               text="MY ACCOUNT"
               selected={selectedMenu === "account"}
               onClick={() => onMenuClick("account")}
+            />
+            <MenuListItemButton
+              text="MY EVENTS"
+              selected={selectedMenu === "events"}
+              onClick={() => onMenuClick("events")}
+            />
+            <MenuListItemButton
+              text="MY PRODUCTS"
+              selected={selectedMenu === "products"}
+              onClick={() => onMenuClick("products")}
             />
             <MenuListItemButton
               text="LOGOUT"

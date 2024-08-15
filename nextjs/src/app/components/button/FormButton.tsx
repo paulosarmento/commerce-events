@@ -13,6 +13,7 @@ const buttonVariants = tv({
         "bg-zinc-800 text-zinc-200 hover:bg-zinc-700 disabled:bg-zinc-800 disabled:text-zinc-500",
       custom:
         "bg-emerald-600 text-gray-50 hover:bg-emerald-500 disabled:opacity-50",
+      red: "bg-red-500 text-gray-50 hover:bg-red-400 disabled:opacity-50",
     },
     size: {
       default: "px-5 py-2",
