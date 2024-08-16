@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Box, Typography } from "@mui/material";
 import { Product } from "@/models";
 import { Button } from "@/app/components/button/FormButton";
-import { ProductQuantityForm } from "../../components/product/ProductQuantityForm";
-import { getProduct } from "@/app/service/ClientService";
+import { getProduct } from "@/app/service/ProductService";
+import { ProductQuantityForm } from "@/app/components/product/ProductQuantityForm";
 
 interface ProductInfoProps {
   product: Product;

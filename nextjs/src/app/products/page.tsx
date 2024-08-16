@@ -1,363 +1,272 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
 import {
   Box,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
+  Drawer,
+  List,
+  ListItemButton,
+  ListItemText,
+  IconButton,
+  CircularProgress,
   Typography,
 } from "@mui/material";
-import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import Link from "next/link";
-import Image from "next/legacy/image";
+import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
 import Header from "../components/Header";
+import {
+  getCategories,
+  getProducts,
+  getProductsCategory,
+} from "../service/ClientService";
+import { Product } from "../types/product";
+import { Categories } from "../types/category";
+import { ProductCard } from "../components/product/ProductCard";
 
-const products = [
-  {
-    id: "1",
-    name: "Produto 1",
-    description: "Descrição do produto 1",
-    price: 100,
-    image_url: "/images/products/1.png",
-    category_id: "1",
-  },
-  {
-    id: "2",
-    name: "Produto 2",
-    description: "Descrição do produto 2",
-    price: 150,
-    image_url: "/images/products/2.png",
-    category_id: "1",
-  },
-  {
-    id: "3",
-    name: "Produto 3",
-    description: "Descrição do produto 3",
-    price: 200,
-    image_url: "/images/products/3.png",
-    category_id: "1",
-  },
-  {
-    id: "4",
-    name: "Produto 4",
-    description: "Descrição do produto 4",
-    price: 250,
-    image_url: "/images/products/4.png",
-    category_id: "1",
-  },
-  {
-    id: "5",
-    name: "Produto 5",
-    description: "Descrição do produto 5",
-    price: 300,
-    image_url: "/images/products/5.png",
-    category_id: "1",
-  },
-  {
-    id: "6",
-    name: "Produto 6",
-    description: "Descrição do produto 6",
-    price: 350,
-    image_url: "/images/products/6.png",
-    category_id: "1",
-  },
-  {
-    id: "7",
-    name: "Produto 7",
-    description: "Descrição do produto 7",
-    price: 400,
-    image_url: "/images/products/7.png",
-    category_id: "1",
-  },
-  {
-    id: "8",
-    name: "Produto 8",
-    description: "Descrição do produto 8",
-    price: 450,
-    image_url: "/images/products/8.png",
-    category_id: "1",
-  },
-  {
-    id: "9",
-    name: "Produto 9",
-    description: "Descrição do produto 9",
-    price: 500,
-    image_url: "/images/products/9.png",
-    category_id: "1",
-  },
-  {
-    id: "10",
-    name: "Produto 10",
-    description: "Descrição do produto 10",
-    price: 550,
-    image_url: "/images/products/10.png",
-    category_id: "1",
-  },
-  {
-    id: "11",
-    name: "Produto 11",
-    description: "Descrição do produto 11",
-    price: 600,
-    image_url: "/images/products/11.png",
-    category_id: "1",
-  },
-  {
-    id: "12",
-    name: "Produto 12",
-    description: "Descrição do produto 12",
-    price: 650,
-    image_url: "/images/products/12.png",
-    category_id: "1",
-  },
-];
+export default function StorePage() {
+  const [state, setState] = useState({
+    categories: [] as Categories,
+    selectedCategory: null as number | null,
+    products: [] as Product[],
+    showCategories: false,
+    currentPage: 1,
+    isLoading: true,
+    noProductsMessage: null as string | null,
+  });
 
-function ListProductsPage() {
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const categories = await getCategories();
+        setState((prevState) => ({ ...prevState, categories }));
+      } catch (error) {
+        console.error("Failed to fetch categories", error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setState((prevState) => ({ ...prevState, isLoading: true }));
+      try {
+        const products =
+          state.selectedCategory !== null
+            ? await getProductsCategory(state.selectedCategory)
+            : await getProducts();
+
+        setState((prevState) => ({
+          ...prevState,
+          products,
+          noProductsMessage: products.length
+            ? null
+            : "No products found in this category.",
+          isLoading: false,
+        }));
+      } catch (error) {
+        console.error("Failed to fetch products", error);
+        setState((prevState) => ({
+          ...prevState,
+          noProductsMessage: "Failed to load products.",
+          isLoading: false,
+        }));
+      }
+    };
+    fetchProducts();
+  }, [state.selectedCategory]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setState((prevState) => ({ ...prevState, showCategories: false }));
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleCategoryChange = (categoryId: number) => {
+    setState((prevState) => ({
+      ...prevState,
+      selectedCategory:
+        prevState.selectedCategory === categoryId ? null : categoryId,
+      currentPage: 1,
+      showCategories: false,
+    }));
+  };
+
+  const toggleCategories = () =>
+    setState((prevState) => ({
+      ...prevState,
+      showCategories: !prevState.showCategories,
+    }));
+
+  const handlePaginationChange = (pageNumber: number) => {
+    setState((prevState) => ({ ...prevState, currentPage: pageNumber }));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const indexOfLastProduct = state.currentPage * 12;
+  const currentProducts = state.products.slice(
+    indexOfLastProduct - 12,
+    indexOfLastProduct
+  );
+  const totalPages = Math.ceil(state.products.length / 12);
+
   return (
-    <div>
-      <div className="relative bg-gradient-to-b pb-8">
-        <Header />
-        <main className="relative overflow-y-scroll p-8 pb-20 scrollbar-hide lg:px-16 mt-20">
-          <Grid2 container spacing={2} justifyContent="center">
-            {products.length === 0 && (
-              <Grid2 xs={12} sx={{ display: "flex", justifyContent: "center" }}>
-                <Typography variant="h5">Nenhum produto encontrado</Typography>
-              </Grid2>
-            )}
-            {products.slice(0, 2).map((product, key) => (
-              <Grid2 xs={12} sm={6} md={6} key={key}>
-                <Card
-                  sx={{
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      position: "relative",
-                      width: "100%",
-                      height: 0,
-                      paddingTop: "56.25%",
-                    }}
-                  >
-                    <Image
-                      src={product.image_url}
-                      alt={product.name}
-                      layout="fill"
-                      objectFit="cover"
-                      priority
-                    />
-                  </Box>
-
-                  <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      {product.name}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        color: "primary.main",
-                      }}
-                    >
-                      {new Intl.NumberFormat("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                      }).format(product.price)}
-                    </Typography>
-                  </CardContent>
-                  <CardActions
-                    sx={{ display: "flex", justifyContent: "end", mt: 2 }}
-                  >
-                    <Link
-                      href={`/products/${product.id}`}
-                      style={{ textDecoration: "none" }}
-                    >
-                      <Button size="small" startIcon={<ShoppingCartIcon />}>
-                        Comprar
-                      </Button>
-                    </Link>
-                  </CardActions>
-                </Card>
-              </Grid2>
+    <>
+      <Header />
+      <Box sx={{ display: "flex", mt: "120px" }}>
+        <IconButton
+          sx={{
+            display: { sm: "none" },
+            position: "fixed",
+            top: 100,
+            right: 16,
+            zIndex: 1300,
+            color: "white",
+          }}
+          onClick={toggleCategories}
+        >
+          <MenuIcon />
+        </IconButton>
+        <Drawer
+          anchor="left"
+          open={state.showCategories}
+          onClose={toggleCategories}
+          sx={{
+            display: { sm: "none" },
+            "& .MuiDrawer-paper": {
+              width: 250,
+              backgroundColor: "#333",
+              color: "white",
+            },
+          }}
+        >
+          <Box sx={{ display: "flex", justifyContent: "flex-end", p: 1 }}>
+            <IconButton onClick={toggleCategories} color="inherit">
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          <List>
+            {state.categories.map((category) => (
+              <ListItemButton
+                key={category.id}
+                selected={state.selectedCategory === category.id}
+                sx={{
+                  backgroundColor:
+                    state.selectedCategory === category.id
+                      ? "rgba(255, 255, 255, 0.1)"
+                      : "transparent",
+                  "&.Mui-selected": {
+                    backgroundColor: "rgba(255, 255, 255, 0.2)",
+                  },
+                  color: "white",
+                }}
+                onClick={() => handleCategoryChange(category.id)}
+              >
+                <ListItemText primary={category.name} />
+              </ListItemButton>
             ))}
-          </Grid2>
-          <Grid2 container spacing={2} justifyContent="center" sx={{ mt: 4 }}>
-            {products.slice(2, 5).map((product, key) => (
-              <Grid2 xs={12} sm={6} md={4} key={key}>
-                <Card
+          </List>
+        </Drawer>
+        <Box
+          component="nav"
+          sx={{
+            width: { sm: 240 },
+            flexShrink: { sm: 0 },
+            display: { xs: "none", sm: "block" },
+          }}
+        >
+          <Drawer
+            variant="permanent"
+            sx={{
+              "& .MuiDrawer-paper": {
+                boxSizing: "border-box",
+                top: 120,
+                width: 240,
+                backgroundColor: "transparent",
+                color: "white",
+              },
+            }}
+            open
+          >
+            <List>
+              {state.categories.map((category) => (
+                <ListItemButton
+                  key={category.id}
+                  selected={state.selectedCategory === category.id}
                   sx={{
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
+                    backgroundColor:
+                      state.selectedCategory === category.id
+                        ? "rgba(255, 255, 255, 0.1)"
+                        : "transparent",
+                    "&.Mui-selected": {
+                      backgroundColor: "rgba(255, 255, 255, 0.2)",
+                    },
+                    color: "white",
                   }}
+                  onClick={() => handleCategoryChange(category.id)}
                 >
-                  <Box
-                    sx={{
-                      position: "relative",
-                      width: "100%",
-                      height: 0,
-                      paddingTop: "56.25%",
-                    }}
-                  >
-                    <Image
-                      src={product.image_url}
-                      alt={product.name}
-                      layout="fill"
-                      objectFit="cover"
-                      priority
-                    />
-                  </Box>
-
-                  <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      {product.name}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        color: "primary.main",
-                      }}
+                  <ListItemText primary={category.name} />
+                </ListItemButton>
+              ))}
+            </List>
+          </Drawer>
+        </Box>
+        <Box
+          component="main"
+          sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - 240px)` } }}
+        >
+          {state.isLoading ? (
+            <Box
+              display="flex"
+              flexDirection="column"
+              justifyContent="center"
+              alignItems="center"
+              height="calc(100vh - 150px)"
+            >
+              <CircularProgress />
+            </Box>
+          ) : state.noProductsMessage ? (
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              height="calc(100vh - 150px)"
+            >
+              <Typography variant="h6">{state.noProductsMessage}</Typography>
+            </Box>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-8">
+                {currentProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+              <Box display="flex" justifyContent="center" mt={8}>
+                <div className="flex items-center space-x-4">
+                  {Array.from({ length: totalPages }, (_, index) => (
+                    <button
+                      key={index}
+                      className={`px-4 py-2 rounded-lg ${
+                        state.currentPage === index + 1
+                          ? "bg-lime-300 text-black"
+                          : "bg-white text-black"
+                      } hover:bg-lime-300 hover:text-black`}
+                      onClick={() => handlePaginationChange(index + 1)}
                     >
-                      {new Intl.NumberFormat("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                      }).format(product.price)}
-                    </Typography>
-                  </CardContent>
-                  <CardActions
-                    sx={{ display: "flex", justifyContent: "end", mt: 2 }}
-                  >
-                    <Link
-                      href={`/products/${product.id}`}
-                      style={{ textDecoration: "none" }}
-                    >
-                      <Button size="small" startIcon={<ShoppingCartIcon />}>
-                        Comprar
-                      </Button>
-                    </Link>
-                  </CardActions>
-                </Card>
-              </Grid2>
-            ))}
-          </Grid2>
-          <Grid2 container spacing={2} justifyContent="center" sx={{ mt: 4 }}>
-            {products.slice(5, 9).map((product, key) => (
-              <Grid2 xs={12} sm={6} md={3} key={key}>
-                <Card
-                  sx={{
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      position: "relative",
-                      width: "100%",
-                      height: 0,
-                      paddingTop: "56.25%",
-                    }}
-                  >
-                    <Image
-                      src={product.image_url}
-                      alt={product.name}
-                      layout="fill"
-                      objectFit="cover"
-                      priority
-                    />
-                  </Box>
-
-                  <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      {product.name}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        color: "primary.main",
-                      }}
-                    >
-                      {new Intl.NumberFormat("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                      }).format(product.price)}
-                    </Typography>
-                  </CardContent>
-                  <CardActions
-                    sx={{ display: "flex", justifyContent: "end", mt: 2 }}
-                  >
-                    <Link
-                      href={`/products/${product.id}`}
-                      style={{ textDecoration: "none" }}
-                    >
-                      <Button size="small" startIcon={<ShoppingCartIcon />}>
-                        Comprar
-                      </Button>
-                    </Link>
-                  </CardActions>
-                </Card>
-              </Grid2>
-            ))}
-          </Grid2>
-          <Grid2 container spacing={2} justifyContent="center" sx={{ mt: 4 }}>
-            {products.slice(9, 12).map((product, key) => (
-              <Grid2 xs={12} sm={6} md={2.4} key={key}>
-                <Card
-                  sx={{
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      position: "relative",
-                      width: "100%",
-                      height: 0,
-                      paddingTop: "56.25%",
-                    }}
-                  >
-                    <Image
-                      src={product.image_url}
-                      alt={product.name}
-                      layout="fill"
-                      objectFit="cover"
-                      priority
-                    />
-                  </Box>
-
-                  <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      {product.name}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        color: "primary.main",
-                      }}
-                    >
-                      {new Intl.NumberFormat("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                      }).format(product.price)}
-                    </Typography>
-                  </CardContent>
-                  <CardActions
-                    sx={{ display: "flex", justifyContent: "end", mt: 2 }}
-                  >
-                    <Link
-                      href={`/products/${product.id}`}
-                      style={{ textDecoration: "none" }}
-                    >
-                      <Button size="small" startIcon={<ShoppingCartIcon />}>
-                        Comprar
-                      </Button>
-                    </Link>
-                  </CardActions>
-                </Card>
-              </Grid2>
-            ))}
-          </Grid2>
-        </main>
-      </div>
-    </div>
+                      {index + 1}
+                    </button>
+                  ))}
+                </div>
+              </Box>
+            </>
+          )}
+        </Box>
+      </Box>
+    </>
   );
 }
-
-export default ListProductsPage;

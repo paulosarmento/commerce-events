@@ -21,7 +21,7 @@ import {
 } from "../service/ProductService";
 import { Product } from "../types/product";
 import { Categories } from "../types/category";
-import { ProductCard } from "../components/product/ProductCard";
+import { ProductCard } from "./[id]/ProductCard";
 
 export default function StorePage() {
   const [state, setState] = useState({

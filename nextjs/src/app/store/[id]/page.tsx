@@ -3,12 +3,11 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Box, CircularProgress, Typography } from "@mui/material";
 import Header from "@/app/components/Header";
+import { getProduct, getProductVariation } from "@/app/service/ProductService";
 import { Product } from "@/models";
-import { ProductGallery } from "../../components/product/ProductGallery";
 import { ProductInfo } from "./ProductInfo";
-import { ProductTabs } from "../../components/product/ProductTabs";
 import Grid2 from "@mui/material/Unstable_Grid2";
-import { getProduct, getProductVariation } from "@/app/service/ClientService";
+import { ProductGallery } from "@/app/components/product/ProductGallery";
 
 export default function ProductDetailPage({
   params: { id },
