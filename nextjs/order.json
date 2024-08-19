@@ -118,3 +118,79 @@
     "customer": [{ "href": "https://example.com/api/customers/1" }]
   }
 }
+
+
+{
+  "customer_id": 1,
+	"payment_method": "asaas-pix",
+  "billing": {
+    "first_name": "Paulo",
+    "last_name": "Sarmento",
+    "company": "",
+    "address_1": "Travessa Manoel Salgado",
+    "address_2": "",
+    "city": "Brasopolis",
+    "state": "MG",
+    "postcode": "37530-000",
+    "country": "BR",
+    "email": "paulosarment@gmail.com",
+    "phone": "(35) 99999-9999",
+    "number": "90",
+    "neighborhood": "centro",
+    "persontype": "M",
+    "cpf": "12",
+    "rg": "",
+    "cnpj": "",
+    "ie": "",
+    "birthdate": "",
+    "gender": "",
+    "cellphone": ""
+  },
+  "shipping": {
+    "first_name": "Paulo",
+    "last_name": "Sarmento",
+    "company": "",
+    "address_1": "Travessa Manoel Salgado",
+    "address_2": "",
+    "city": "Brasopolis",
+    "state": "MG",
+    "postcode": "37530-444",
+    "country": "BR",
+    "phone": "",
+    "number": "99",
+    "neighborhood": "centro"
+  },
+	"line_items": [
+    {
+			"product_id": 104,
+      "variation_id": 444,
+   
+      "name": "Product 1",
+      "quantity": 2,
+     
+			"total": "1000.00",
+      "image": {
+        "src": "https://example.com/image1.jpg"
+      }
+    },
+    {
+			"product_id": 44,
+      "variation_id": 33,
+
+      "name": "Product 2",
+      "quantity": 2,
+    
+			
+			"total": "1000.00",
+      "image": {
+        "src": "https://example.com/image2.jpg"
+      }
+    }
+  ]
+  
+}
+
+  
+  
+  
+

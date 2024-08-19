@@ -12,28 +12,76 @@ import {
   Avatar,
   ListItemText,
   Divider,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
 } from "@mui/material";
 import { useState } from "react";
 import { Button } from "../button/FormButton";
 import { Total } from "../Total";
 import { removeItemFromCartAction } from "@/app/server-actions/cart.action";
 import { Delete as DeleteIcon } from "@mui/icons-material";
+import { Billing, Shipping } from "@/models";
+import { createOrder } from "@/app/service/OrderService";
 
 export default function Checkout({
+  user,
   cart,
   products,
+  paymentMethods,
+  billing,
+  shipping,
 }: {
+  user: any;
   cart: any;
   products: any;
+  paymentMethods: any;
+  billing: Billing;
+  shipping: Shipping;
 }) {
+  const [selectedPaymentMethod, setSelectedPaymentMethod] =
+    useState("asaas-pix");
+
+  const handlePaymentMethodChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setSelectedPaymentMethod(event.target.value);
+  };
   const steps = [
     {
       label: "Informações de Envio",
-      description: <></>,
+      description: (
+        <Box sx={{ mb: 2 }}>
+          <Typography>Rua: {billing?.address_1}</Typography>
+          <Typography>Numero: {billing?.number}</Typography>
+          <Typography>Cidade: {billing?.city}</Typography>
+          <Typography>Estado: {billing?.state}</Typography>
+          <Typography>CEP: {billing?.postcode}</Typography>
+        </Box>
+      ),
     },
     {
       label: "Informações de Pagamento",
-      description: <></>,
+      description: (
+        <Box sx={{ mb: 2 }}>
+          <RadioGroup
+            aria-label="payment-method"
+            name="payment-method"
+            value={selectedPaymentMethod}
+            onChange={handlePaymentMethodChange}
+          >
+            {paymentMethods.map((method: any) => (
+              <FormControlLabel
+                key={method.id}
+                value={method.id}
+                control={<Radio />}
+                label={method.title}
+                sx={{ color: "black" }}
+              />
+            ))}
+          </RadioGroup>
+        </Box>
+      ),
     },
     {
       label: "Revisão do Pedido",
@@ -101,7 +149,6 @@ export default function Checkout({
                     }
                   />
                 </Box>
-
                 <Divider />
               </Box>
             );
@@ -128,6 +175,15 @@ export default function Checkout({
     setActiveStep(0);
   };
 
+  function handleOrder() {
+    console.log("Customer:", user);
+    console.log("Ordering...", cart.items);
+    console.log("Payment method:", selectedPaymentMethod);
+    console.log("Address:", billing);
+    console.log("Total:", cart.total);
+    handleReset();
+  }
+
   return (
     <>
       <Stepper activeStep={activeStep} orientation="vertical">
@@ -153,7 +209,17 @@ export default function Checkout({
                 >
                   Voltar
                 </Button>
-                <Button onClick={handleNext} variant="primary" color="primary">
+                <Button
+                  onClick={() => {
+                    if (index === steps.length - 1) {
+                      handleOrder();
+                    } else {
+                      handleNext();
+                    }
+                  }}
+                  variant="primary"
+                  color="primary"
+                >
                   {index === steps.length - 1 ? "Finalizar" : "Continuar"}
                 </Button>
               </Box>

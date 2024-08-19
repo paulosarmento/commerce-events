@@ -38,3 +38,16 @@ export const addAddress = async (viewerId: number, address: Address) => {
     throw new Error(`Error adding address: ${error}`);
   }
 };
+
+export const paymentMethod = async () => {
+  try {
+    const response = await woocommerceClient.get("/payment_gateways");
+
+    const enabledPaymentMethods = response.data.filter(
+      (method: any) => method.enabled === true
+    );
+    return enabledPaymentMethods;
+  } catch (error) {
+    throw new Error(`Error getting payment methods: ${error}`);
+  }
+};

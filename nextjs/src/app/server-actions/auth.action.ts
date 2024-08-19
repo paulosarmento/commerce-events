@@ -28,6 +28,26 @@ export const getUserName = async () => {
   });
   return data.viewer.name;
 };
+
+export const getUserId = async () => {
+  const client = await getAuthClient();
+
+  if (!client) {
+    throw new Error("Not authenticated");
+  }
+
+  const { data } = await client.query({
+    query: gql`
+      query GetViewer {
+        viewer {
+          databaseId
+        }
+      }
+    `,
+  });
+  return data.viewer.databaseId;
+};
+
 export async function logoutAction() {
   return await onLogout();
 }

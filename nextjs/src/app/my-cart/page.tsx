@@ -4,10 +4,13 @@ import {
   Box,
   Button,
   Divider,
+  FormControlLabel,
   List,
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Radio,
+  RadioGroup,
   Typography,
 } from "@mui/material";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
@@ -20,6 +23,9 @@ import { getCart } from "../service/CartService";
 import { getProductsByIds } from "../service/ProductService";
 import Header from "../components/Header";
 import Checkout from "../components/checkout";
+import { getCustomer } from "../service/MyAccountService";
+import { getUserId } from "../server-actions/auth.action";
+import { paymentMethod } from "../server-actions/checkout.action";
 
 const steps = [
   {
@@ -38,10 +44,17 @@ const steps = [
 
 async function MyCartPage() {
   const cart = getCart();
-  console.log(cart);
   const products = await getProductsByIds(
     cart.items.map((item) => item.product_id)
   );
+  const userId = await getUserId();
+
+  const { billing, shipping } = await getCustomer(userId);
+
+  const paymentMethods = await paymentMethod();
+  paymentMethods.forEach((method: any) => {
+    console.log(method.title);
+  });
 
   return (
     <Box>
@@ -176,7 +189,14 @@ async function MyCartPage() {
                 boxShadow: 3,
               }}
             >
-              <Checkout cart={cart} products={products} />
+              <Checkout
+                user={userId}
+                cart={cart}
+                products={products}
+                paymentMethods={paymentMethods}
+                shipping={shipping}
+                billing={billing}
+              />
 
               <Button
                 variant="outlined"
