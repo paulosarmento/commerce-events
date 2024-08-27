@@ -1,7 +1,11 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { addToCart, removeItemFromCart } from "../service/CartService";
+import {
+  addToCart,
+  clearCart,
+  removeItemFromCart,
+} from "../service/CartService";
 
 export type CartItem = {
   product_id: string;
@@ -26,4 +30,8 @@ export async function addToCartAction(formData: FormData) {
 export async function removeItemFromCartAction(formData: FormData) {
   const index = parseInt(formData.get("index") as string);
   removeItemFromCart(index);
+}
+
+export async function clearCartAction() {
+  clearCart();
 }

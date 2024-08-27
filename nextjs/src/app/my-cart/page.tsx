@@ -52,9 +52,6 @@ async function MyCartPage() {
   const { billing, shipping } = await getCustomer(userId);
 
   const paymentMethods = await paymentMethod();
-  paymentMethods.forEach((method: any) => {
-    console.log(method.title);
-  });
 
   return (
     <Box>
@@ -176,7 +173,7 @@ async function MyCartPage() {
                 justifyContent: "end",
               }}
             >
-              <Total total={cart.total} />
+              <Total total={+cart.total} />
             </Box>
           </Grid2>
 

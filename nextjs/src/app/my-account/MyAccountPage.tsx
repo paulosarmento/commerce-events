@@ -1,9 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import Header from "../components/Header";
 import { logoutAction } from "../server-actions/auth.action";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "../components/button/FormButton";
 import MenuDrawer from "../components/my-account/MenuDrawer";
 import Loading from "../components/my-account/Loading";
@@ -13,10 +13,18 @@ import AddressesList from "../components/my-account/address/AddressesList";
 import Account from "../components/my-account/Account";
 
 export const MyAccountPage = ({ viewer, orders, posts, customer }: any) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [selectedMenu, setSelectedMenu] = useState<string>("welcome");
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const router = useRouter();
+
+  useEffect(() => {
+    const menu = searchParams.get("menu");
+    if (menu) {
+      setSelectedMenu(menu);
+    }
+  }, [searchParams]);
 
   const handleLogout = async () => {
     try {

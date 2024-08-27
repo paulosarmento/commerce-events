@@ -19,10 +19,15 @@ import {
 import { useState } from "react";
 import { Button } from "../button/FormButton";
 import { Total } from "../Total";
-import { removeItemFromCartAction } from "@/app/server-actions/cart.action";
+import {
+  clearCartAction,
+  removeItemFromCartAction,
+} from "@/app/server-actions/cart.action";
 import { Delete as DeleteIcon } from "@mui/icons-material";
 import { Billing, Shipping } from "@/models";
 import { createOrder } from "@/app/service/OrderService";
+import { redirect, useRouter } from "next/navigation";
+import { clearCart } from "@/app/service/CartService";
 
 export default function Checkout({
   user,
@@ -41,6 +46,7 @@ export default function Checkout({
 }) {
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState("asaas-pix");
+  const router = useRouter();
 
   const handlePaymentMethodChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -175,13 +181,26 @@ export default function Checkout({
     setActiveStep(0);
   };
 
-  function handleOrder() {
-    console.log("Customer:", user);
-    console.log("Ordering...", cart.items);
-    console.log("Payment method:", selectedPaymentMethod);
-    console.log("Address:", billing);
-    console.log("Total:", cart.total);
-    handleReset();
+  async function handleOrder() {
+    try {
+      const order = await createOrder({
+        customer_id: user,
+        billing,
+        line_items: cart.items.map((item: any) => ({
+          product_id: item.product_id,
+          quantity: item.quantity,
+        })),
+        payment_method: selectedPaymentMethod,
+      });
+      if (order) {
+        await clearCartAction();
+        router.push(`my-orders/${order.id}`);
+        // router.push(`/my-account?menu=orders`);
+        // router.refresh();
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (
